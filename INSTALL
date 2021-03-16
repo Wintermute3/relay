@@ -6,28 +6,33 @@ bright.tiger@gmail.com
 Starting with an unconfigured Raspberry Pi, do the following:
 
     - assure that WiFi is connected to the Internet
-
     - open a command prompt
-
     - assure git is installed:
-
         sudo apt install git
-
     - change into the 'pi' user's home directory:
-
         cd
 
+If the 'relay' directory already exists in the 'pi' home directory,
+then update it like this:
+
+    - change into the 'relay' directory:
+        cd relay
+    - update the contents to the latest version:
+        git pull
+
+Otherwise, create it like this:
+
     - clone the wintermute3/relay project from github:
-
         git clone https://github.com/Wintermute3/relay.git
-
     - change into the relay directory:
-
         cd relay
 
-    - run the install script:
+Now run the installation script (it doesn't hurt to do so more
+than once):
 
+    - run the install script:
         ./install.sh
 
 After the script finishes, you should be good to go inserting 'relay'
-commands in the key bindings configuration file.
+commands in the key bindings configuration file.  if you run it again
+it should display a 'success' message to confirm all went well.
