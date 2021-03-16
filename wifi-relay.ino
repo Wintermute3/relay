@@ -83,8 +83,8 @@ bool RelayState() {
 }
 
 void RelaySet(bool OnOff) {
-  Serial.println(           OnOff ? "relay on" : "relay off");
-  digitalWrite(RelayOutput, OnOff ?        On  :        Off );
+  Serial.println(           OnOff ? "  relay on" : "  relay off");
+  digitalWrite(RelayOutput, OnOff ?          On  :          Off );
 }
 
 void RelayInit() {
@@ -132,6 +132,7 @@ void setup() {
 //------------------------------------------------------------------
 
 void loop(){
+  String Command = "";
   WiFiClient client = server.available();
   if (client) {
     #ifdef DEBUG
@@ -154,17 +155,19 @@ void loop(){
             client.println("Content-type:text/html");
             client.println("Connection: close");
             client.println();
+            // Serial.println(header);
             if (header.indexOf("GET /on") >= 0) {
               RelaySet(On);
             } else if (header.indexOf("GET /off") >= 0) {
               RelaySet(Off);
             } else {
-              if (int Offset = header.indexOf("GET /") > 0) {
-                String Command = header.substr(Offset+5);
-                Serial.print("Command [");
-                Serial.print(Command);
-                Serial.println("]");
-            } }
+              int Offset = header.indexOf("GET /");
+              if (Offset >= 0) {
+                Command = header.substring(Offset+5);
+                Offset = Command.indexOf(" ");
+                if (Offset > 0) {
+                  Command = Command.substring(0, Offset);
+            } } }
             client.println("<!DOCTYPE html><html>");
             client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
             client.println("<link rel=\"icon\" href=\"data:,\">");
@@ -188,14 +191,34 @@ void loop(){
           }
         } else if (c != '\r') {
           currentLine += c;
-    } } }
+      } }
+    }
     header = "";
     client.stop();
     #ifdef DEBUG
       Serial.println("client disconnected");
       Serial.println("");
     #endif
-} }
+    if (Command.length() > 0) {
+      Serial.print("start [");
+      Serial.print(Command);
+      Serial.println("]...");
+      while (Command.length() > 0) {
+        if (Command.startsWith("+")) {
+          RelaySet(On);
+          Command = Command.substring(1);
+        } else if (Command.startsWith("-")) {
+          RelaySet(Off);
+          Command = Command.substring(1);
+        } else {
+          int Delay = Command.toInt();
+          Serial.print("  delay ");
+          Serial.println(Delay);
+          delay(Delay * 1000);
+          Command = Command.substring(String(Delay).length());
+      } }
+      Serial.println("done");
+} } }
 
 //==================================================================
 // end

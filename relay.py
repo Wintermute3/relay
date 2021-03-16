@@ -14,15 +14,6 @@ CONTACT = 'bright.tiger@mail.com' # michael nagy
 import os, sys, subprocess, json
 
 #------------------------------------------------------------------------------
-# simple url encoder
-#------------------------------------------------------------------------------
-
-import urllib.parse
-
-def UrlEncode(Command):
-  return urllib.parse.quote(Command)
-
-#------------------------------------------------------------------------------
 # announce ourselves
 #------------------------------------------------------------------------------
 
@@ -60,7 +51,15 @@ commands may be:
     {name}+ . . . . . . turn relay {name} on
     {name}- . . . . . . turn relay {name} off
 
-names must be configured in the %s file
+you may also follow {name} with a sequence of +/- and delay times in
+seconds, so for instance the following will turn relay 'a1' off (which
+may be its initial state anyway), delay two seconds, turn it on, delay
+another 10 seconds and turn it off again:
+
+    a1-2+10-
+
+command sequences must always start with either + or -, and names must
+be configured in the %s file
 '''
   Splash()
   print(HelpText % (sys.argv[0], JsonFile))
@@ -94,6 +93,19 @@ except:
 
 if not len(Relays):
   ShowError("configuration file '%s' defines no relays" % (JsonFile))
+
+#------------------------------------------------------------------------------
+# return true if the command string is valid
+#------------------------------------------------------------------------------
+
+def ValidCommand(Command):
+  while Command:
+    if not Command[0] in '+-':
+      return False
+    Command = Command[1:]
+    while Command and Command[0] in '0123456789':
+      Command = Command[1:]
+  return True
 
 #------------------------------------------------------------------------------
 # validate the argument list and build a command list.  each command toke may
@@ -172,7 +184,7 @@ try:
   if Hits:
     if len(RelayCommands):
       for Command in RelayCommands:
-        URL = 'http://%s/%s' % (Command['ip'], UrlEncode(Command['command']))
+        URL = 'http://%s/%s' % (Command['ip'], Command['command'])
         if DebugFlag:
           print('curl -s %s' % (URL))
         for Line in subprocess.check_output(['curl','-s',URL]).decode('ascii').split('\n'):
