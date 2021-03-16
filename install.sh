@@ -6,6 +6,8 @@
 # keeping things.
 #============================================================================
 
+echo
+
 # assure we are in the 'pi' user's home directory
 cd /home/pi/relay
 
@@ -26,7 +28,7 @@ else
 fi
 
 # assure the arp-scan utility is installed
-if which arp-scan; then
+if which arp-scan > /dev/null; then
   echo the arp-scan utility is installed
 else
   echo
@@ -44,6 +46,8 @@ else
   sudo cp relay /usr/local/sbin/
   echo installed the relay helper script
 fi
+
+echo
 
 #============================================================================
 # end
