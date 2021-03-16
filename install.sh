@@ -17,7 +17,7 @@ DELTA=0
 if grep syringanetworks /etc/hosts > /dev/null; then
   echo the syringa workaround is installed
 else
-  echo '0.0.0.0 mirrors.syringanetworks.net' | sudo tee -a /etc/hosts > /dev/null
+  echo -e '0.0.0.0\t\tmirrors.syringanetworks.net' | sudo tee -a /etc/hosts > /dev/null
   echo installed the syringa workaround
   DELTA=1
 fi
