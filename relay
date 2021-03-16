@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python3 ~/git/relay/relay.py $@
+cd /home/pi/relay
+python3 /home/pi/relay/relay.py $@
