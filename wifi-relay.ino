@@ -3,7 +3,7 @@
 // to control a relay
 //==================================================================
 
-#define VERSION "2.102.221"
+#define VERSION "2.103.161"
 #define PROGRAM "wifi-relay"
 #define CONTACT "bright.tiger@gmail.com"
 
@@ -97,7 +97,7 @@ void RelayInit() {
 //------------------------------------------------------------------
 
 unsigned long currentTime = millis();
-unsigned long previousTime = 0; 
+unsigned long previousTime = 0;
 const long timeoutTime = 2000;
 
 //------------------------------------------------------------------
@@ -141,7 +141,7 @@ void loop(){
     currentTime = millis();
     previousTime = currentTime;
     while (client.connected() && currentTime - previousTime <= timeoutTime) {
-      currentTime = millis();         
+      currentTime = millis();
       if (client.available()) {
         char c = client.read();
         #ifdef DEBUG
@@ -158,7 +158,13 @@ void loop(){
               RelaySet(On);
             } else if (header.indexOf("GET /off") >= 0) {
               RelaySet(Off);
-            }
+            } else {
+              if (int Offset = header.indexOf("GET /") > 0) {
+                String Command = header.substr(Offset+5);
+                Serial.print("Command [");
+                Serial.print(Command);
+                Serial.println("]");
+            } }
             client.println("<!DOCTYPE html><html>");
             client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
             client.println("<link rel=\"icon\" href=\"data:,\">");
@@ -173,7 +179,7 @@ void loop(){
             } else {
               client.println("<p>Relay is OFF</p>");
               client.println("<p><a href=\"/on\"><button class=\"button\">Turn ON</button></a></p>");
-            } 
+            }
             client.println("</body></html>");
             client.println();
             break;

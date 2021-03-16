@@ -8,10 +8,19 @@
 #==============================================================================
 
 PROGRAM = 'relay.py'
-VERSION = '2.103.041'
+VERSION = '2.103.161'
 CONTACT = 'bright.tiger@mail.com' # michael nagy
 
 import os, sys, subprocess, json
+
+#------------------------------------------------------------------------------
+# simple url encoder
+#------------------------------------------------------------------------------
+
+import urllib.parse
+
+def UrlEncode(Command):
+  return urllib.parse.quote(Command)
 
 #------------------------------------------------------------------------------
 # announce ourselves
@@ -87,7 +96,21 @@ if not len(Relays):
   ShowError("configuration file '%s' defines no relays" % (JsonFile))
 
 #------------------------------------------------------------------------------
-# validate the argument list and build a command list
+# validate the argument list and build a command list.  each command toke may
+# look like this:
+#
+#    {relayid}(+|-)[<time>|+|-]
+#
+# the items in the square brackets may be repeated as desired.  for instance,
+# to turn on relay a1, wait 30 seconds, and then turn it off:
+#
+#    a1+30-
+#
+# if relay a1 is already off and you want to wait 120 seconds to turn it on,
+# then wait another 30 seconds to turn it off, then:
+#
+#    a1-120+30-
+#
 #------------------------------------------------------------------------------
 
 RelayCommands = []
@@ -104,14 +127,11 @@ for arg in sys.argv[1:]:
     for Relay in Relays['relay']:
       Name = Relay['name']
       Mac  = Relay['mac' ]
-      On  = '%s+' % (Name)
-      Off = '%s-' % (Name)
-      if ArgCommand == On:
-        RelayCommands.append({'name': Name, 'mac': Mac, 'ip': None, 'command': 'on'})
-        Hit = True
-      elif ArgCommand == Off:
-        RelayCommands.append({'name': Name, 'mac': Mac, 'ip': None, 'command': 'off'})
-        Hit = True
+      if ArgCommand.startswith(Name):
+        Command = ArgCommand[len(Name):]
+        if ValidCommand(Command):
+          RelayCommands.append({'name': Name, 'mac': Mac, 'ip': None, 'command': Command})
+          Hit = True
     if not Hit:
       ShowError("relay command '%s' not recognized - check '%s' file" % (arg, JsonFile))
 
@@ -152,7 +172,7 @@ try:
   if Hits:
     if len(RelayCommands):
       for Command in RelayCommands:
-        URL = 'http://%s/%s' % (Command['ip'], Command['command'])
+        URL = 'http://%s/%s' % (Command['ip'], UrlEncode(Command['command']))
         if DebugFlag:
           print('curl -s %s' % (URL))
         for Line in subprocess.check_output(['curl','-s',URL]).decode('ascii').split('\n'):

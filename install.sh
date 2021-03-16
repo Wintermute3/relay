@@ -1,5 +1,9 @@
 #!/bin/bash
 
+PROGRAM='install.sh'
+VERSION='2.103.161'
+CONTACT='bright.tiger@mail.com' # michael nagy
+
 #============================================================================
 # set things up so that the the relay script is accessible via a shortcut
 # from anywhere on the system, and do a couple of other more minor house-
@@ -45,10 +49,10 @@ else
 fi
 
 # install the relay shortcut script on the path
-if [ -f /usr/local/sbin/relay ]; then
+if [ -f /usr/local/bin/relay ]; then
   echo the relay helper script is installed
 else
-  sudo cp relay /usr/local/sbin/
+  sudo cp relay /usr/local/bin/
   echo installed the relay helper script
   DELTA=1
 fi
