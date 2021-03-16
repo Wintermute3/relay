@@ -20,7 +20,7 @@ else
 fi
 
 # assure nagy's favorite alias is installed
-if grep 'alias ll=' ~/.bashrc > /dev/null; then
+if grep '^alias ll=' ~/.bashrc > /dev/null; then
   echo the ll alias is installed
 else
   echo "alias ll='ls -l'" >> ~/.bashrc
