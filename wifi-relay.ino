@@ -3,9 +3,15 @@
 // to control a relay
 //==================================================================
 
-#define VERSION "2.103.161"
+#define VERSION "2.103.281"
 #define PROGRAM "wifi-relay"
 #define CONTACT "bright.tiger@gmail.com"
+
+//------------------------------------------------------------------
+// diagnostic and status information is sent to the serial console
+//------------------------------------------------------------------
+
+#define CONSOLE_BAUDRATE 115200
 
 //------------------------------------------------------------------
 // you need to know the ip address assigned to the wifi relay when
@@ -69,6 +75,31 @@ WiFiServer server(80);
 String header;
 
 //------------------------------------------------------------------
+// some typedefs to keep us honest
+//------------------------------------------------------------------
+
+typedef const               char * ccptr ;
+typedef const   signed      int    cint16;
+typedef       unsigned long int     bit32;
+
+//------------------------------------------------------------------
+// we need a wifi network connection to report data to corlysis,
+// and will pick the one with the strongest signal from the
+// following list
+//------------------------------------------------------------------
+
+typedef struct {
+  ccptr Location, Ssid, Password;
+} t_WiFiNetwork;
+
+#define WIFI_NETWORKS 2
+
+const t_WiFiNetwork WiFiNetwork[WIFI_NETWORKS] = {
+  { "lab"  , "werecow25", "micro123" },
+  { "house", "werecow29", "micro123" }
+};
+
+//------------------------------------------------------------------
 // the relay interface - you can change the output pin if you like,
 // but D0 is also the built-in led which can be handy.
 //------------------------------------------------------------------
@@ -106,23 +137,78 @@ const long timeoutTime = 2000;
 //------------------------------------------------------------------
 
 void setup() {
-  Serial.begin(115200);
+  ccptr BestSsid     = NULL;
+  ccptr BestPassword = NULL;
+  ccptr BestLocation = NULL;
+  int32 BestRssi = -200;
+  Serial.begin(CONSOLE_BAUDRATE);
+  delay(1000);
   Serial.println();
   Serial.println(PROGRAM " " VERSION);
   Serial.println();
   RelayInit();
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  delay(100);
   Serial.print("mac address: ");
   Serial.println(WiFi.macAddress());
-  Serial.print("connecting to ssid: ");
-  Serial.println(ssid);
-  WiFi.begin(ssid, password);
+  Serial.println("starting wifi scan...");
+  while (BestRssi < -180) {
+    if (int ScanResults = WiFi.scanNetworks(false, true)) { // async, hidden
+      if (ScanResults > 0) {
+        String Ssid;
+        int32 Rssi;
+        byte EncryptionType;
+        uint8_t * Bssid;
+        bool Hidden;
+        int32 Channel;
+        Serial.printf("  found %d networks\n", ScanResults);
+        for (int i = 0; i < ScanResults; i++) {
+          WiFi.getNetworkInfo(i, Ssid, EncryptionType, Rssi, Bssid, Channel, Hidden);
+          Serial.printf(PSTR("    %02d: [CH %02d] [%02X:%02X:%02X:%02X:%02X:%02X] %ddBm %c %c %s\n"),
+                        i,
+                        Channel,
+                        Bssid[0], Bssid[1], Bssid[2],
+                        Bssid[3], Bssid[4], Bssid[5],
+                        Rssi,
+                        (EncryptionType == ENC_TYPE_NONE) ? ' ' : '*',
+                        Hidden ? 'H' : 'V',
+                        Ssid.c_str());
+          for (int Network = 0; Network < WIFI_NETWORKS; Network++) {
+            if (Ssid == WiFiNetwork[Network].Ssid) {
+              if (Rssi > BestRssi) {
+                BestRssi = Rssi;
+                BestLocation = WiFiNetwork[Network].Location;
+                BestSsid     = WiFiNetwork[Network].Ssid    ;
+                BestPassword = WiFiNetwork[Network].Password;
+          } } }
+          delay(0);
+        }
+      } else {
+        Serial.printf(PSTR("  wifi scan error %d"), ScanResults);
+      }
+    } else {
+      Serial.println("  no networks found");
+    }
+    if (BestRssi < -180) {
+      delay(5000);
+  } }
+  Serial.println("autoselected network");
+  Serial.printf("      rssi: %ddBm\n", BestRssi    );
+  Serial.printf("  location: %s\n", BestLocation);
+  Serial.printf("      ssid: %s\n", BestSsid    );
+  Serial.printf("  password: %s\n", BestPassword);
+  Serial.print("starting wifi...");
+  delay(1000);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(BestSsid, BestPassword);
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
+    delay(100);
     Serial.print(".");
   }
   Serial.println();
-  Serial.println("connected");
-  Serial.print("ip address: ");
+  Serial.println("WiFi connected.");
+  Serial.print("My IP address: ");
   Serial.println(WiFi.localIP());
   server.begin();
 }
