@@ -1,9 +1,9 @@
 //==================================================================
-// minimal web server controlling a single digital output intended
+// minimal web WebServer controlling a single digital output intended
 // to control a relay
 //==================================================================
 
-#define VERSION "2.103.281"
+#define VERSION "2.103.282"
 #define PROGRAM "wifi-relay"
 #define CONTACT "bright.tiger@gmail.com"
 
@@ -14,10 +14,18 @@
 #define CONSOLE_BAUDRATE 115200
 
 //------------------------------------------------------------------
+// feature flags - set AUTO_OFF to 0 to disable that feature
+//------------------------------------------------------------------
+
+#define RELAY_INIT  false  // false for off, true for on
+#define RELAY_ON        1  // 0 for active low, 1 for active high
+#define AUTO_OFF      360  // turn off automatically after so many seconds
+
+//------------------------------------------------------------------
 // you need to know the ip address assigned to the wifi relay when
 // it connects to the network, but that will potentially change
 // every time it connects to the wifi network.  you can find it
-// from the dhcp server table on your wifi router, or by using the
+// from the dhcp WebServer table on your wifi router, or by using the
 // arp-scan utility, but either way you will want to know the mac
 // address of the wifi relay board.  to find that, plug it in and
 // turn on the serial monitor (at 115200) in the arduino ide, and
@@ -26,7 +34,7 @@
 // last two digits on the board itself for future reference.
 //
 // if you can access the wifi router web interface you may be able
-// to see the assigned ip address in the dhcp server status table.
+// to see the assigned ip address in the dhcp WebServer status table.
 // you may also have to option of making that address static, or
 // locking it to the mac address.  if you have that option, take
 // it and then things won't change unexpectidly in the future.
@@ -71,8 +79,8 @@ const char* password = "micro123" ;
 //------------------------------------------------------------------
 
 #include <ESP8266WiFi.h>
-WiFiServer server(80);
-String header;
+WiFiServer WebServer(80);
+String Header;
 
 //------------------------------------------------------------------
 // some typedefs to keep us honest
@@ -100,14 +108,23 @@ const t_WiFiNetwork WiFiNetwork[WIFI_NETWORKS] = {
 };
 
 //------------------------------------------------------------------
+// some crude timing variables
+//------------------------------------------------------------------
+
+      bit32 CurrentTime  = millis();
+      bit32 PreviousTime =        0;
+      bit32 RelayTime    =        0;
+const bit32 TimeoutTime  =     2000;
+
+//------------------------------------------------------------------
 // the relay interface - you can change the output pin if you like,
 // but D0 is also the built-in led which can be handy.
 //------------------------------------------------------------------
 
 const int RelayOutput = D0;
 
-const bool On  = true ;
-const bool Off = false;
+const bool On  = RELAY_ON ? true  : false; // was true
+const bool Off = RELAY_ON ? false : true ; // was false
 
 bool RelayState() {
   return digitalRead(RelayOutput) ? On : Off;
@@ -116,20 +133,13 @@ bool RelayState() {
 void RelaySet(bool OnOff) {
   Serial.println(           OnOff ? "  relay on" : "  relay off");
   digitalWrite(RelayOutput, OnOff ?          On  :          Off );
+  RelayTime = millis();
 }
 
 void RelayInit() {
   pinMode(RelayOutput, OUTPUT);
-  RelaySet(Off);
+  RelaySet(RELAY_INIT);
 }
-
-//------------------------------------------------------------------
-// some crude timing variables
-//------------------------------------------------------------------
-
-unsigned long currentTime = millis();
-unsigned long previousTime = 0;
-const long timeoutTime = 2000;
 
 //------------------------------------------------------------------
 // start up the serial console, turn the relay output off, and
@@ -207,53 +217,64 @@ void setup() {
     Serial.print(".");
   }
   Serial.println();
-  Serial.println("WiFi connected.");
-  Serial.print("My IP address: ");
+  Serial.print("  wifi connected - ip address: ");
   Serial.println(WiFi.localIP());
-  server.begin();
+  WebServer.begin();
+  Serial.print("on  = "); Serial.println(On );
+  Serial.print("off = "); Serial.println(Off);
+  Serial.print("relay = "); Serial.println(RelayState());
 }
 
 //------------------------------------------------------------------
-// run the simple web server which allows for on/off relay control
+// run the simple web WebServer which allows for on/off relay control
 //------------------------------------------------------------------
 
 void loop(){
   String Command = "";
-  WiFiClient client = server.available();
+  WiFiClient client = WebServer.available();
+  if (RelayState() == On) {
+    if (AUTO_OFF) {
+      bit32 AutoTime = millis();
+      if (((AutoTime - RelayTime) / 1000) > AUTO_OFF) {
+        RelaySet(false);
+  } } }
   if (client) {
     #ifdef DEBUG
       Serial.println("new client");
     #endif
-    String currentLine = "";
-    currentTime = millis();
-    previousTime = currentTime;
-    while (client.connected() && currentTime - previousTime <= timeoutTime) {
-      currentTime = millis();
+    String CurrentLine = "";
+    CurrentTime = millis();
+    PreviousTime = CurrentTime;
+    while (client.connected() && CurrentTime - PreviousTime <= TimeoutTime) {
+      CurrentTime = millis();
       if (client.available()) {
         char c = client.read();
         #ifdef DEBUG
           Serial.write(c);
         #endif
-        header += c;
+        Header += c;
         if (c == '\n') {
-          if (currentLine.length() == 0) {
+          if (CurrentLine.length() == 0) {
             client.println("HTTP/1.1 200 OK");
             client.println("Content-type:text/html");
             client.println("Connection: close");
             client.println();
-            // Serial.println(header);
-            if (header.indexOf("GET /on") >= 0) {
-              RelaySet(On);
-            } else if (header.indexOf("GET /off") >= 0) {
-              RelaySet(Off);
-            } else {
-              int Offset = header.indexOf("GET /");
-              if (Offset >= 0) {
-                Command = header.substring(Offset+5);
-                Offset = Command.indexOf(" ");
-                if (Offset > 0) {
-                  Command = Command.substring(0, Offset);
-            } } }
+            #ifdef DEBUG
+              Serial.println(Header);
+            #endif
+            if (Header.indexOf("GET / ") < 0) {
+              if (Header.indexOf("GET /on ") >= 0) {
+                RelaySet(true);
+              } else if (Header.indexOf("GET /off ") >= 0) {
+                RelaySet(false);
+              } else {
+                int Offset = Header.indexOf("GET /");
+                if (Offset >= 0) {
+                  Command = Header.substring(Offset+5);
+                  Offset = Command.indexOf(" ");
+                  if (Offset > 0) {
+                    Command = Command.substring(0, Offset);
+            } } } }
             client.println("<!DOCTYPE html><html>");
             client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
             client.println("<link rel=\"icon\" href=\"data:,\">");
@@ -273,13 +294,13 @@ void loop(){
             client.println();
             break;
           } else {
-            currentLine = "";
+            CurrentLine = "";
           }
         } else if (c != '\r') {
-          currentLine += c;
+          CurrentLine += c;
       } }
     }
-    header = "";
+    Header = "";
     client.stop();
     #ifdef DEBUG
       Serial.println("client disconnected");
@@ -291,10 +312,10 @@ void loop(){
       Serial.println("]...");
       while (Command.length() > 0) {
         if (Command.startsWith("+")) {
-          RelaySet(On);
+          RelaySet(true);
           Command = Command.substring(1);
         } else if (Command.startsWith("-")) {
-          RelaySet(Off);
+          RelaySet(false);
           Command = Command.substring(1);
         } else {
           int Delay = Command.toInt();
