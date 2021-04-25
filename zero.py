@@ -85,14 +85,14 @@ print
 app = Flask(__name__)
 
 def Feedback():
-  return '%s %s - relay is %s' % (PROGRAM, VERSION, Status)
-
-@app.route('/')
-def index():
   if Relay.on:
     Status = 'on'
   else:
     Status = 'off'
+  return '%s %s - relay is %s' % (PROGRAM, VERSION, Status)
+
+@app.route('/')
+def index():
   return Feedback()
 
 @app.route('/on')
