@@ -28,7 +28,7 @@ RelayPin = 23
 from flask import Flask
 import os, sys, uuid
 import socket
-from gpiozero import RelayGpio
+from gpiozero import LED
 from time import sleep
 
 #==============================================================================
@@ -69,7 +69,7 @@ def getMAC(interface='wlan0'):
 # configure the GPIO output and assure it is initally turned off
 #==============================================================================
 
-Relay = RelayGpio(RelayPin)
+Relay = LED(RelayPin)
 
 #==============================================================================
 # main
