@@ -30,6 +30,7 @@ import os, sys, uuid
 import socket
 from gpiozero import LED
 from time import sleep
+import asyncio
 
 #==============================================================================
 # get the mac address of the active interface
@@ -72,6 +73,25 @@ def getMAC(interface='wlan0'):
 Relay = LED(RelayPin, active_high=True, initial_value=False)
 
 #==============================================================================
+# kick off an asynchronous external process to run the command string
+#==============================================================================
+
+def RunCommand(Command):
+  proc = await asyncio.create_subprocess_exec(
+      'zero-gpio.py', RelayPin, Command)
+  proc = await asyncio.create_subprocess_exec(
+      'zero-audio.py', RelayPin, Command)
+  #,
+  #    stdout=asyncio.subprocess.PIPE,
+  #    stderr=asyncio.subprocess.PIPE)
+
+# do something else while ls is working
+
+# if proc takes very long to complete, the CPUs are free to use cycles for
+# other processes
+#stdout, stderr = await proc.communicate()
+
+#==============================================================================
 # main
 #==============================================================================
 
@@ -109,7 +129,8 @@ def cmd_off():
 
 @app.errorhandler(404)
 def cmd_sequence(e):
-  return Feedback(request.path)
+  Command = request.path[1:]
+  return Feedback(Command)
 
 if __name__ == '__main__':
   app.run(debug=True, host='0.0.0.0', port=80)
