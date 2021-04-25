@@ -1,9 +1,9 @@
 //==================================================================
-// minimal web WebServer controlling a single digital output intended
-// to control a relay
+// minimal web WebServer controlling a single digital output
+// intended to control a relay
 //==================================================================
 
-#define VERSION "2.103.282"
+#define VERSION "2.104.242"
 #define PROGRAM "wifi-relay"
 #define CONTACT "bright.tiger@gmail.com"
 
