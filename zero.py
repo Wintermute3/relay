@@ -11,9 +11,30 @@
 
 from flask import Flask
 import os, sys, uuid
+import socket
 
-MAC = ':'.join(['{:02x}'.format((uuid.getnode() >> ele) & 0xff) for ele in range(0,8*6,8)][::-1])
-print('MAC = [%s]' % (MAC))
+# get the mac address of the active interface
+
+def get_mac():
+  return ':'.join(['{:02x}'.format((uuid.getnode() >> ele) & 0xff) for ele in range(0,8*6,8)][::-1])
+
+
+# get the ip of the interface with the default route
+
+def get_ip():
+  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+  try:
+    # doesn't even have to be reachable
+    s.connect(('10.255.255.255', 1))
+    IP = s.getsockname()[0]
+  except Exception:
+    IP = '127.0.0.1'
+  finally:
+    s.close()
+  return IP
+
+print('MAC = [%s]' % (get_mac()))
+print('IP = [%s]' % (get_ip()))
 
 os._exit(1)
 
