@@ -84,12 +84,14 @@ print
 
 app = Flask(__name__)
 
-def Feedback():
+def Feedback(Detail=''):
+  if Detail:
+    Detail = ' [%s]' % (Detail)
   if Relay.value:
     Status = 'on'
   else:
     Status = 'off'
-  return '%s %s - relay is %s' % (PROGRAM, VERSION, Status)
+  return '%s %s - relay is %s%s' % (PROGRAM, VERSION, Status, Detail)
 
 @app.route('/')
 def index():
@@ -104,6 +106,10 @@ def cmd_on():
 def cmd_off():
   Relay.off()
   return Feedback()
+
+@app.errorhandler(404)
+def cmd_sequence(e):
+  return Feedback(request.path)
 
 if __name__ == '__main__':
   app.run(debug=True, host='0.0.0.0', port=80)
