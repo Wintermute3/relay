@@ -25,7 +25,7 @@ RelayPin = 23 # pin 16
 # test right channel:
 #   speaker-test -c2 -s2
 
-from flask import Flask
+from flask import Flask, request
 import os, sys, uuid
 import socket
 from gpiozero import LED
