@@ -9,7 +9,7 @@ PROGRAM = 'zero.py'
 VERSION = '2.104.241'
 CONTACT = 'bright.tiger@gmail.com'
 
-RelayPin = 23
+RelayPin = 23 # pin 16
 
 # autostart on boot
 # log mac address and ip
@@ -69,7 +69,7 @@ def getMAC(interface='wlan0'):
 # configure the GPIO output and assure it is initally turned off
 #==============================================================================
 
-Relay = LED(RelayPin)
+Relay = LED(RelayPin, active_high=True, initial_value=False)
 
 #==============================================================================
 # main
@@ -85,7 +85,7 @@ print
 app = Flask(__name__)
 
 def Feedback():
-  if Relay.on:
+  if Relay.value:
     Status = 'on'
   else:
     Status = 'off'
