@@ -49,9 +49,11 @@ except:
 print
 print('%s %s' % (PROGRAM, VERSION))
 try:
-  Sequence = sys.argv[1]
+  Counter = int(sys.argv[1])
+  Sequence = sys.argv[2]
   print('sequence [%s]' % (Sequence))
   with open(StatusFile, 'w') as f:
+    f.write('%d\n' % (Counter))
     f.write('%s %s [%s]\n' % (PROGRAM, VERSION, Sequence))
     if Relay: # allow limited testing on non-pi-zero platforms
       if Relay.value:

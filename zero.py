@@ -57,22 +57,40 @@ def getMAC(interface='wlan0'):
 # report the most recent status posted by the zero-sequence.py utility
 #==============================================================================
 
-def Feedback(Detail=''):
-  if Detail:
-    Detail = ' [%s]' % (Detail)
-  with open(StatusFile) as f:
-    Status = ''.join(f.readlines())
-  Text = '%s %s%s\n%s' % (PROGRAM, VERSION, Detail, Status)
+Counter = 0
+
+def Feedback(Sequence=''):
+  if Sequence:
+    Sequence = ' [%s]' % (Sequence)
+  Retry = 10
+  while Retry:
+    Retry -= 1
+    try:
+      with open(StatusFile) as f:
+        Status = ''.join(f.readlines())
+      Check = int(Status.split('\n')[0])
+      if Check == Counter:
+        print('retry = %d, check match' % (Retry))
+        Retry = 0
+      else:
+        print('retry = %d, check nomatch' % (Retry))
+        sleep(1)
+    except:
+      print('retry = %d, exception' % (Retry))
+      sleep(1)
+  Text = '%s %s%s\n%s' % (PROGRAM, VERSION, Sequence, Status)
   return '<br>'.join(Text.split('\n'))
 
 #==============================================================================
 # asynchronously kick off zero-sequence.py to run the command sequence
 #==============================================================================
 
-def RunCommand(Command):
-  os.system('/home/pi/git/relay/zero-sequence.py %s &' % (Command))
+def RunSequence(Sequence):
+  global Counter
+  Counter += 1
+  os.system('/home/pi/git/relay/zero-sequence.py %d %s &' % (Counter, Sequence))
   sleep(0.2)
-  return Feedback(Command)
+  return Feedback(Sequence)
 
 #==============================================================================
 # main
@@ -97,15 +115,15 @@ def favicon():
 
 @app.route('/on')
 def cmd_on():
-  return RunCommand('+')
+  return RunSequence('+')
 
 @app.route('/off')
 def cmd_off():
-  return RunCommand('-')
+  return RunSequence('-')
 
 @app.errorhandler(404)
 def cmd_sequence(e):
-  return RunCommand(request.path[1:])
+  return RunSequence(request.path[1:])
 
 if __name__ == '__main__':
   app.run(debug=True, host='0.0.0.0', port=80)
