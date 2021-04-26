@@ -47,16 +47,16 @@ print
 print('%s %s' % (PROGRAM, VERSION))
 try:
   Sequence = sys.argv[1]
-  print('command: %s' % (Sequence))
+  print('sequence [%s]' % (Sequence))
   with open(StatusFile, 'w') as f:
     if Relay:
       if Relay.value:
-        f.write('relay is on\n')
+        f.write('gpio %d is on\n' % (RelayGpio))
       else:
-        f.write('relay is off\n')
+        f.write('gpio %d is off\n' % (RelayGpio))
     else:
-      f.write('relay undefined\n')
-    f.write('sequence: %s\n' % (Sequence))
+      f.write('gpio %d undefined\n' % (RelayGpio))
+    f.write('sequence [%s]\n' % (Sequence))
   for Command in re.split('(\W)', Sequence):
     if Command == '+':
       print('relay on')

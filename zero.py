@@ -13,9 +13,8 @@ CONTACT = 'bright.tiger@gmail.com'
 
 # autostart on boot
 
+import os, uuid, socket
 from flask import Flask, request
-import os, uuid
-import socket
 from time import sleep
 
 StatusFile = 'zero.status'
@@ -54,16 +53,20 @@ def getMAC(interface='wlan0'):
     str = "00:00:00:00:00:00"
   return str[0:17]
 
+#==============================================================================
+# report the most recent status posted by the zero-sequence.py utility
+#==============================================================================
+
 def Feedback(Detail=''):
   if Detail:
-    Detail = ' - [%s]' % (Detail)
+    Detail = ' [%s]' % (Detail)
   with open(StatusFile) as f:
     Status = ''.join(f.readlines())
   Text = '%s %s%s\n%s' % (PROGRAM, VERSION, Detail, Status)
   return '<br>'.join(Text.split('\n'))
 
 #==============================================================================
-# kick off an asynchronous external process to run the command sequence
+# asynchronously kick off zero-sequence.py to run the command sequence
 #==============================================================================
 
 def RunCommand(Command):
