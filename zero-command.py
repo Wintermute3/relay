@@ -34,7 +34,7 @@ from time import sleep
 Relay = None
 try:
   from gpiozero import LED
-  Relay = LED(RelayGpio, active_high=True, initial_value=False)
+  Relay = LED(RelayGpio, active_high=False, initial_value=False)
 except:
   pass
 
