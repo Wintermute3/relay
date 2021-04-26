@@ -54,12 +54,12 @@ def getMAC(interface='wlan0'):
     str = "00:00:00:00:00:00"
   return str[0:17]
 
-def Feedback():
+def Feedback(Detail=''):
   if Detail:
-    Detail = ' [%s]' % (Detail)
+    Detail = ' - [%s]' % (Detail)
   with open(StatusFile) as f:
     Status = ''.join(f.readlines())
-  return '%s %s - %s\n%s' % (PROGRAM, VERSION, Detail, Status)
+  return '%s %s%s\n%s' % (PROGRAM, VERSION, Detail, Status)
 
 #==============================================================================
 # kick off an asynchronous external process to run the command sequence
