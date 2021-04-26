@@ -87,6 +87,10 @@ app = Flask(__name__)
 def index():
   return Feedback()
 
+@app.route('/favicon.ico')
+def favicon():
+  return Feedback()
+
 @app.route('/on')
 def cmd_on():
   return RunCommand('+')
