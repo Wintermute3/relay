@@ -66,7 +66,7 @@ def Feedback(Detail=''):
 #==============================================================================
 
 def RunCommand(Command):
-  os.system('zero-sequence.py %s &' % (Command))
+  os.system('/home/pi/git/relay/zero-sequence.py %s &' % (Command))
   sleep(0.2)
   return Feedback(Command)
 
