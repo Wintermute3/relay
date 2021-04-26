@@ -59,7 +59,9 @@ def Feedback(Detail=''):
     Detail = ' - [%s]' % (Detail)
   with open(StatusFile) as f:
     Status = ''.join(f.readlines())
-  return '%s %s%s\n%s' % (PROGRAM, VERSION, Detail, Status)
+  Html = '%s %s%s\n%s' % (PROGRAM, VERSION, Detail, Status).split('\n')
+  Html = '<br>'.join(Html)
+  return Html
 
 #==============================================================================
 # kick off an asynchronous external process to run the command sequence
