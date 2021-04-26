@@ -2,35 +2,23 @@
 
 #==============================================================================
 # turn a raspberry pi zero into a wifi relay / sound trigger node compatible
-# with the arduino-based relay.ino program
+# with the arduino-based relay.ino program.  utilize the external companion
+# program 'zero-command.py' to actually effect actions, and monitor its status
+# via its text output file 'zero.status'.
 #==============================================================================
 
 PROGRAM = 'zero.py'
-VERSION = '2.104.241'
+VERSION = '2.104.251'
 CONTACT = 'bright.tiger@gmail.com'
 
-RelayPin = 23 # pin 16
-
 # autostart on boot
-# log mac address and ip
-# serve relay logic to gpio
-# serve sound logic to alsa device
-
-# plug in sabrent usb audio adapter
-#   lsusb -> id 0d8c:0014 C-Media Electronics, Inc. Audio Adapter (Unitek Y247-A)
-#
-# test left channel:
-#   speaker-test -c2 -s1
-#
-# test right channel:
-#   speaker-test -c2 -s2
 
 from flask import Flask, request
-import os, sys, uuid
+import os, uuid
 import socket
-from gpiozero import LED
 from time import sleep
-import asyncio
+
+StatusFile = 'zero.status'
 
 #==============================================================================
 # get the mac address of the active interface
@@ -66,30 +54,21 @@ def getMAC(interface='wlan0'):
     str = "00:00:00:00:00:00"
   return str[0:17]
 
-#==============================================================================
-# configure the GPIO output and assure it is initally turned off
-#==============================================================================
+def Feedback():
+  if Detail:
+    Detail = ' [%s]' % (Detail)
+  with open(StatusFile) as f:
+    Status = ''.join(f.readlines())
+  return '%s %s - %s\n%s' % (PROGRAM, VERSION, Detail, Status)
 
-Relay = LED(RelayPin, active_high=True, initial_value=False)
-
 #==============================================================================
-# kick off an asynchronous external process to run the command string
+# kick off an asynchronous external process to run the command sequence
 #==============================================================================
 
 def RunCommand(Command):
-  proc = await asyncio.create_subprocess_exec(
-      'zero-gpio.py', RelayPin, Command)
-  proc = await asyncio.create_subprocess_exec(
-      'zero-audio.py', RelayPin, Command)
-  #,
-  #    stdout=asyncio.subprocess.PIPE,
-  #    stderr=asyncio.subprocess.PIPE)
-
-# do something else while ls is working
-
-# if proc takes very long to complete, the CPUs are free to use cycles for
-# other processes
-#stdout, stderr = await proc.communicate()
+  os.system('zero-sequence.py %s &' % (Command))
+  sleep(0.2)
+  return Feedback(Command)
 
 #==============================================================================
 # main
@@ -104,33 +83,21 @@ print
 
 app = Flask(__name__)
 
-def Feedback(Detail=''):
-  if Detail:
-    Detail = ' [%s]' % (Detail)
-  if Relay.value:
-    Status = 'on'
-  else:
-    Status = 'off'
-  return '%s %s - relay is %s%s' % (PROGRAM, VERSION, Status, Detail)
-
 @app.route('/')
 def index():
   return Feedback()
 
 @app.route('/on')
 def cmd_on():
-  Relay.on()
-  return Feedback()
+  return RunCommand('+')
 
 @app.route('/off')
 def cmd_off():
-  Relay.off()
-  return Feedback()
+  return RunCommand('-')
 
 @app.errorhandler(404)
 def cmd_sequence(e):
-  Command = request.path[1:]
-  return Feedback(Command)
+  return RunCommand(request.path[1:])
 
 if __name__ == '__main__':
   app.run(debug=True, host='0.0.0.0', port=80)
