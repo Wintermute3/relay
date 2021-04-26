@@ -8,7 +8,7 @@ PROGRAM = 'zero-sequence.py'
 VERSION = '2.104.251'
 CONTACT = 'bright.tiger@gmail.com'
 
-#RelayGpio = 23 # pin 16
+#RelayGpio = 23 # pin 16 / for real external relay control
 RelayGpio = 47 # pin BCM / built-in activity monitor LED for testing
 
 AudioFile = 'xyz.wav'
@@ -28,7 +28,8 @@ import os, sys, re
 from time import sleep
 
 #==============================================================================
-# configure the GPIO output and assure it is initally turned off
+# configure the GPIO output and assure it is initally turned off (raspberry
+# pi zero gpios are active low)
 #==============================================================================
 
 Relay = None
