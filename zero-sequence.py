@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+#todo: handle fractional seconds delay
+#todo: handle audio trigger
+
 #==============================================================================
 # execute a sequence of one or more gpio and/or audio output commands
 #==============================================================================
@@ -37,7 +40,7 @@ try:
   from gpiozero import LED
   Relay = LED(RelayGpio, active_high=False, initial_value=False)
 except:
-  pass
+  pass # allow limited testing on non-pi-zero platforms
 
 #==============================================================================
 # main
@@ -49,14 +52,14 @@ try:
   Sequence = sys.argv[1]
   print('sequence [%s]' % (Sequence))
   with open(StatusFile, 'w') as f:
-    if Relay:
+    f.write('%s %s [%s]\n' % (PROGRAM, VERSION, Sequence))
+    if Relay: # allow limited testing on non-pi-zero platforms
       if Relay.value:
-        f.write('gpio %d is on\n' % (RelayGpio))
+        f.write('gpio %d is initially on\n' % (RelayGpio))
       else:
-        f.write('gpio %d is off\n' % (RelayGpio))
+        f.write('gpio %d is initially off\n' % (RelayGpio))
     else:
       f.write('gpio %d undefined\n' % (RelayGpio))
-    f.write('sequence [%s]\n' % (Sequence))
   for Command in re.split('(\W)', Sequence):
     if Command == '+':
       print('relay on')
