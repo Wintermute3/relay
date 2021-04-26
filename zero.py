@@ -70,13 +70,10 @@ def Feedback(Sequence=''):
         Status = ''.join(f.readlines())
       Check = int(Status.split('\n')[0])
       if Check == Counter:
-        print('retry = %d, check match' % (Retry))
         Retry = 0
       else:
-        print('retry = %d, check nomatch' % (Retry))
         sleep(1)
     except:
-      print('retry = %d, exception' % (Retry))
       sleep(1)
   Text = '%s %s%s\n%s' % (PROGRAM, VERSION, Sequence, Status)
   return '<br>'.join(Text.split('\n'))
@@ -126,7 +123,8 @@ def cmd_sequence(e):
   return RunSequence(request.path[1:])
 
 if __name__ == '__main__':
-  app.run(debug=True, host='0.0.0.0', port=80)
+  #app.run(debug=True, host='0.0.0.0', port=80)
+  app.run(host='0.0.0.0', port=80)
 
 #==============================================================================
 # end
