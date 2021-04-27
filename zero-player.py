@@ -58,9 +58,9 @@ except:
   os._exit(1)
 
 try:
-  Config = yaml.load(open(ConfigFile), Loader=yaml.FullLoader)
-  RelayGpio = Config.RelayGpio
-  AudioFile = Config.AudioFile
+  Config = yaml.load(open(ConfigFile))
+  RelayGpio = Config['RelayGpio']
+  AudioFile = Config['AudioFile']
 except:
   Log("*** ERROR 1: yaml file '%s' misconfigured or not found!" % (ConfigFile))
   os._exit(1)
