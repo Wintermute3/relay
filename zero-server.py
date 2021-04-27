@@ -8,7 +8,7 @@
 #==============================================================================
 
 PROGRAM = 'zero-server.py'
-VERSION = '2.104.261'
+VERSION = '2.104.271'
 CONTACT = 'bright.tiger@gmail.com'
 
 # todo: autostart on boot
@@ -17,7 +17,7 @@ import os, uuid, socket
 from flask import Flask, request
 from time import sleep
 
-StatusFile = '/home/pi/git/relay/zero.status'
+StatusFile = '/home/pi/relay/zero.status'
 
 #==============================================================================
 # get the mac address of the active interface
@@ -84,7 +84,7 @@ def Feedback(Sequence=''):
 def RunSequence(Sequence):
   global Counter
   Counter += 1
-  os.system('/home/pi/git/relay/zero-player.py %d %s &' % (Counter, Sequence))
+  os.system('/home/pi/relay/zero-player.py %d %s &' % (Counter, Sequence))
   sleep(0.2)
   return Feedback(Sequence)
 
