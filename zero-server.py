@@ -17,7 +17,7 @@ import os, uuid, socket
 from flask import Flask, request
 from time import sleep
 
-StatusFile = 'zero.status'
+StatusFile = '/home/pi/git/relay/zero.status'
 
 #==============================================================================
 # get the mac address of the active interface
