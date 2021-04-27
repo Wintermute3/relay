@@ -7,8 +7,8 @@
 # execute a sequence of one or more gpio and/or audio output commands
 #==============================================================================
 
-PROGRAM = 'zero-sequence.py'
-VERSION = '2.104.251'
+PROGRAM = 'zero-player.py'
+VERSION = '2.104.261'
 CONTACT = 'bright.tiger@gmail.com'
 
 #RelayGpio = 23 # pin 16 / for real external relay control
