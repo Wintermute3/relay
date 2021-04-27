@@ -65,6 +65,36 @@ else
   DELTA=1
 fi
 
+# assure the systemd service is current, running and enabled
+if [ -f /etc/systemd/system/zero.service ]; then
+  if cmp -s zero.service /etc/systemd/system/zero.service; then
+    echo systemd service is current
+    if systemctl status zero; then
+      echo systemd service is running
+    else
+      echo starting and enabling systemd service
+      sudo systemctl daemon-reload
+      sudo systemctl start zero
+      sudo systemctl enable zero
+    fi
+  else
+    echo reinstalling systemd service
+    sudo systemctl disable zero
+    sudo systemctl stop    zero
+    sudo cp zero.service /etc/systemd/system/
+    sudo systemctl daemon-reload
+    sudo systemctl start zero
+    sudo systemctl enable zero
+    DELTA=1
+  fi
+else
+  echo installing systemd service
+  sudo cp zero.service /etc/systemd/system/
+  sudo systemctl start zero
+  sudo systemctl enable zero
+  DELTA=1
+fi
+
 echo
 if [ "${DELTA}" == '1' ]; then
   echo 'changes were made - run ./install.sh again to verify'

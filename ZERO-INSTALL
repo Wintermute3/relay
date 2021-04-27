@@ -3,7 +3,7 @@ Michael Nagy
 bright.tiger@gmail.com
 (813) 731-1470
 
-Starting with an unconfigured Raspberry Pi, do the following:
+Starting with an unconfigured Raspberry Pi Zero, do the following:
 
     - assure that WiFi is connected to the Internet
     - open a command prompt
@@ -31,8 +31,7 @@ Now run the installation script (it doesn't hurt to do so more
 than once):
 
     - run the install script:
-        ./pi-install.sh
+        ./zero-install.sh
 
-After the script finishes, you should be good to go inserting 'relay'
-commands in the key bindings configuration file.  if you run it again
+After the script finishes, you should be good.  if you run it again
 it should display a 'success' message to confirm all went well.
