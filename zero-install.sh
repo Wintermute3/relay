@@ -59,8 +59,7 @@ fi
 if [ -f /etc/systemd/system/zero.service ]; then
   if cmp -s zero.service /etc/systemd/system/zero.service; then
     echo systemd service is current
-    systemctl status zero
-    if [ $? == 3 ]; then
+    if systemctl status zero; then
       echo systemd service is running
     else
       echo starting and enabling systemd service

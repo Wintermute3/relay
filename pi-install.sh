@@ -73,7 +73,7 @@ fi
 
 echo
 if [ "${DELTA}" == '1' ]; then
-  echo 'changes were made - run ./install.sh again to verify'
+  echo 'changes were made - run ./pi-install.sh again to verify'
   echo 'that all is well.  if it is, you should not see this'
   echo "message again, but rather a 'success' message"
 else
