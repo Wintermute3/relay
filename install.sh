@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PROGRAM='install.sh'
-VERSION='2.103.161'
+VERSION='2.104.271'
 CONTACT='bright.tiger@mail.com' # michael nagy
 
 #============================================================================
@@ -30,7 +30,7 @@ fi
 if grep '^alias ll=' ~/.bashrc > /dev/null; then
   echo the ll alias is installed
 else
-  echo "alias ll='ls -l'" >> ~/.bashrc
+  echo "alias ll='ls -lh'" >> ~/.bashrc
   echo installed the ll alias
   DELTA=1
 fi
