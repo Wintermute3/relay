@@ -96,12 +96,13 @@ except:
 
 def AudioStart(AudioFile):
   try:
-    if player.get_state() == 6: # ENDED
-      Log('vlc audio playback start')
-      player = vlc.MediaPlayer(AudioFile)
-      player.play()
-    else:
-      Log('vlc status %d - skipping start' % (player.get_state()))
+    Log('vlc audio playback start')
+    player = vlc.MediaPlayer(AudioFile)
+    player.play()
+    #if player.get_state() == 6: # ENDED
+    #  Log('vlc audio playback start')
+    #else:
+    #  Log('vlc status %d - skipping start' % (player.get_state()))
   except:
     Log('*** ERROR 4: vlc exception!')
     Log("             try: 'sudo apt install pulseaudio'")
