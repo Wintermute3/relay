@@ -27,15 +27,11 @@ CONTACT = 'bright.tiger@gmail.com'
 # test right channel:
 #   speaker-test -c2 -s2
 
-import os, sys, re, yaml, time
+import os, sys, re, time
 from syslog import syslog
 
 ConfigFile = '/home/pi/git/relay/zero.config'
 StatusFile = '/home/pi/git/relay/zero.status'
-
-print
-print('%s %s' % (PROGRAM, VERSION))
-print
 
 #==============================================================================
 # log a message to the console and /var/log/syslog
@@ -45,17 +41,28 @@ def Log(Message):
   print('%s' % (Message))
   syslog(Message)
 
+print
+Log('%s %s' % (PROGRAM, VERSION))
+print
+
 #==============================================================================
 # load the yaml configuration file.  it is expected to define RelayGpio and
 # AudioFile.
 #==============================================================================
 
 try:
+  import yaml
+except:
+  Log('*** ERROR 0: import yaml failed!')
+  Log("             try: 'sudo apt install python3-yaml'")
+  os._exit(1)
+
+try:
   Config = yaml.load(open(ConfigFile), Loader=yaml.FullLoader)
   RelayGpio = Config.RelayGpio
   AudioFile = Config.AudioFile
 except:
-  Log("*** yaml file '%s' misconfigured or not found!" % (ConfigFile))
+  Log("*** ERROR 1: yaml file '%s' misconfigured or not found!" % (ConfigFile))
   os._exit(1)
 
 #==============================================================================
@@ -68,7 +75,7 @@ try:
   from gpiozero import LED
   Relay = LED(RelayGpio, active_high=False, initial_value=False)
 except:
-  Log('*** failed to configure gpio %s!' % (RelayGpio))
+  Log('*** ERROR 2: failed to configure gpio %s!' % (RelayGpio))
   os._exit(1)
 
 #==============================================================================
@@ -79,8 +86,8 @@ try:
   import vlc
   vlc.Instance("--vout none") # seemed to help select proper output device, not sure why
 except:
-  Log('*** ERROR 0: python-vlc not found!')
-  Log("             try: 'sudo pip3 install python-vlc'")
+  Log('*** ERROR 3: import vlc failed!')
+  Log("             try: 'sudo apt install python3-vlc'")
   os._exit(1)
 
 #==============================================================================
@@ -96,8 +103,8 @@ def AudioStart(AudioFile):
     else:
       Log('vlc status %d - skipping start' % (player.get_state()))
   except:
-    Log('*** ERROR 3: VLC EXCEPTION')
-    Log("             try: 'sudo apt-get install pulseaudio'")
+    Log('*** ERROR 4: vlc exception!')
+    Log("             try: 'sudo apt install pulseaudio'")
 
 #==============================================================================
 # main
