@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 #==============================================================================
-# turn a raspberry pi zero into a wifi relay / sound trigger node compatible
+# turn a raspberry pi into a gpio sequencer / audio player node compatible
 # with the arduino-based relay.ino program.  utilize the external companion
-# program 'zero-command.py' to actually effect actions, and monitor its status
+# program 'zero-player.py' to actually effect actions, and monitor its status
 # via its text output file 'zero.status'.
 #==============================================================================
 
@@ -11,7 +11,7 @@ PROGRAM = 'zero-server.py'
 VERSION = '2.104.261'
 CONTACT = 'bright.tiger@gmail.com'
 
-# autostart on boot
+# todo: autostart on boot
 
 import os, uuid, socket
 from flask import Flask, request
@@ -84,7 +84,7 @@ def Feedback(Sequence=''):
 def RunSequence(Sequence):
   global Counter
   Counter += 1
-  os.system('/home/pi/git/relay/zero-sequence.py %d %s &' % (Counter, Sequence))
+  os.system('/home/pi/git/relay/zero-player.py %d %s &' % (Counter, Sequence))
   sleep(0.2)
   return Feedback(Sequence)
 
