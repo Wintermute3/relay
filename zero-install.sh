@@ -59,13 +59,15 @@ fi
 if [ -f /etc/systemd/system/zero.service ]; then
   if cmp -s zero.service /etc/systemd/system/zero.service; then
     echo systemd service is current
-    if systemctl status zero; then
+    systemctl status zero
+    if [ $? == 3 ]; then
       echo systemd service is running
     else
       echo starting and enabling systemd service
       sudo systemctl daemon-reload
       sudo systemctl start zero
       sudo systemctl enable zero
+      DELTA=1
     fi
   else
     echo reinstalling systemd service
