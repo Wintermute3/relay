@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROGRAM='install.sh'
+PROGRAM='pi-install.sh'
 VERSION='2.104.271'
 CONTACT='bright.tiger@mail.com' # michael nagy
 
@@ -26,12 +26,20 @@ else
   DELTA=1
 fi
 
-# assure nagy's favorite alias is installed
+# assure nagy's favorite aliases are installed
 if grep '^alias ll=' ~/.bashrc > /dev/null; then
   echo the ll alias is installed
 else
   echo "alias ll='ls -lh'" >> ~/.bashrc
   echo installed the ll alias
+  DELTA=1
+fi
+
+if grep '^alias e=' ~/.bashrc > /dev/null; then
+  echo the e alias is installed
+else
+  echo "alias e='nano -l'" >> ~/.bashrc
+  echo installed the e alias
   DELTA=1
 fi
 
