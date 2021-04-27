@@ -4,12 +4,12 @@ Description=zero-server.py - gpio/audio remote node
 [Service]
 ExecStartPre=/bin/sleep 10
 Type=simple
-WorkingDirectory=/home/pi
+WorkingDirectory=/home/pi/relay
 ExecStart=/home/pi/relay/zero-server.py
 StandardOutput=syslog
 StandardError=syslog
-User=pi
-Group=pi
+User=root
+Group=root
 Restart=always
 
 [Install]

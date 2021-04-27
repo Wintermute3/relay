@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 #==============================================================================
-# turn a raspberry pi into a gpio sequencer / audio player node compatible
-# with the arduino-based relay.ino program.  utilize the external companion
-# program 'zero-player.py' to actually effect actions, and monitor its status
-# via its text output file 'zero.status'.
+# turn a raspberry pi zero into a gpio sequencer / audio player node
+# compatible with the arduino-based relay.ino program.  utilize the external
+# companion program 'zero-player.py' to actually effect actions, and monitor
+# its status via its text output file 'zero.status'.
 #==============================================================================
 
 PROGRAM = 'zero-server.py'
@@ -122,7 +122,6 @@ def cmd_sequence(e):
   return RunSequence(request.path[1:])
 
 if __name__ == '__main__':
-  #app.run(debug=True, host='0.0.0.0', port=80)
   app.run(host='0.0.0.0', port=80)
 
 #==============================================================================
