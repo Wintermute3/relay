@@ -91,18 +91,31 @@ except:
   os._exit(1)
 
 #==============================================================================
-# start audio playback unless still busy with last one
+# start playing audiofile unless still busy with last one.  if called with no
+# audiofile and a previous playback is still in progress, wait for it to
+# finish before returning (exit processing)
 #==============================================================================
 
-def AudioStart(AudioFile):
+VlcPlayer = None
+
+def AudioPlayback(AudioFile=None):
+  global VlcPlayer
   try:
-    Log('vlc audio playback start')
-    player = vlc.MediaPlayer(AudioFile)
-    player.play()
-    #if player.get_state() == 6: # ENDED
-    #  Log('vlc audio playback start')
-    #else:
-    #  Log('vlc status %d - skipping start' % (player.get_state()))
+    if AudioFile:
+      if VlcPlayer:
+        if VlcPlayer.get_state() != 6: # ENDED
+          Log('vlc audio playback busy / skipped')
+          return
+      Log('vlc audio playback start')
+      VlcPlayer = vlc.MediaPlayer(AudioFile)
+      VlcPlayer.play()
+    else:
+      if VlcPlayer:
+        if VlcPlayer.get_state() != 6: # ENDED
+          Log('vlc audio playback in progress')
+          while VlcPlayer.get_state() != 6: # ENDED
+            time.sleep(0.5)
+          Log('vlc audio playback complete')
   except:
     Log('*** ERROR 4: vlc exception!')
     Log("             try: 'sudo apt install pulseaudio'")
@@ -131,7 +144,7 @@ try:
       Relay.off()
     elif Command == '*':
       print("audio '%s' start" % (AudioFile))
-      AudioStart(AudioFile)
+      AudioPlayback(AudioFile)
     else:
       try:
         Delay = int(Command)
@@ -141,6 +154,7 @@ try:
         pass
 except:
   pass
+AudioPlayback()
 print
 
 #==============================================================================
