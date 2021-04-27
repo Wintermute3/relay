@@ -31,7 +31,7 @@ Now run the installation script (it doesn't hurt to do so more
 than once):
 
     - run the install script:
-        ./install.sh
+        ./pi-install.sh
 
 After the script finishes, you should be good to go inserting 'relay'
 commands in the key bindings configuration file.  if you run it again
