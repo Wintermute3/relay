@@ -31,32 +31,48 @@ function AssureSystemd {
   if [ -f /etc/systemd/system/${SERVICE}.service ]; then
     if cmp -s ${SERVICE}.service /etc/systemd/system/${SERVICE}.service; then
       if systemctl -q is-active ${SERVICE}; then
-        echo 'systemd service ${SERVICE} is running'
+        echo "the systemd service ${SERVICE} is running"
       else
-        echo 'starting and enabling the systemd ${SERVICE} service...'
+        echo "starting and enabling the systemd ${SERVICE} service..."
         sudo systemctl daemon-reload
         sudo systemctl start ${SERVICE}
         sudo systemctl enable ${SERVICE}
-        echo '  started and enabled the systemd ${SERVICE} service'
+        echo "  started and enabled the systemd ${SERVICE} service"
         DELTA=1
       fi
     else
-      echo 'reinstalling the systemd ${SERVICE} service...'
+      echo "reinstalling the systemd ${SERVICE} service..."
       sudo systemctl disable ${SERVICE}
       sudo systemctl stop    ${SERVICE}
       sudo cp ${SERVICE}.service /etc/systemd/system/
       sudo systemctl daemon-reload
       sudo systemctl start ${SERVICE}
       sudo systemctl enable ${SERVICE}
-      echo '  reinstalling the systemd ${SERVICE} service'
+      echo "  reinstalling the systemd ${SERVICE} service"
       DELTA=1
     fi
   else
-    echo 'installing the systemd ${SERVICE} service...'
+    echo "installing the systemd ${SERVICE} service..."
     sudo cp ${SERVICE}.service /etc/systemd/system/
     sudo systemctl start ${SERVICE}
     sudo systemctl enable ${SERVICE}
-    echo '  installed the systemd ${SERVICE} service'
+    echo "  installed the systemd ${SERVICE} service"
+    DELTA=1
+  fi
+}
+
+#============================================================================
+# assure the specified python3 library is installed
+#============================================================================
+
+function AssurePythonLib() {
+  LIBRARY=${1}
+  if python3 -c "import pkgutil; exit(not pkgutil.find_loader(\"${LIBRARY}\"))"; then
+    echo "the python3-${LIBRARY} library is installed"
+  else
+    echo "installing the python3-${LIBRARY} library..."
+    sudo apt install python3-${LIBRARY}
+    echo "  installed the python3-${LIBRARY} library"
     DELTA=1
   fi
 }
@@ -93,23 +109,8 @@ fi
 # assure the yaml and vlc python3 libraries are installed
 #============================================================================
 
-if python3 -c 'import pkgutil; exit(not pkgutil.find_loader("yaml"))'; then
-  echo 'the python3-yaml library is installed'
-else
-  echo 'installing the python3-yaml library...'
-  sudo apt install python3-yaml
-  echo '  installed the python3-yaml library'
-  DELTA=1
-fi
-
-if python3 -c 'import pkgutil; exit(not pkgutil.find_loader("vlc"))'; then
-  echo 'the python3-vlc library is installed'
-else
-  echo 'installing the python3-vlc library...'
-  sudo apt install python3-vlc
-  echo '  installed the python3-vlc library'
-  DELTA=1
-fi
+AssurePythonLib yaml
+AssurePythonLib vlc
 
 #============================================================================
 # assure pulseaudio is configured for anonymous authentication
