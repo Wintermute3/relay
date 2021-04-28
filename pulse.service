@@ -3,7 +3,7 @@ Description=PulseAudio system server
 
 [Service]
 Type=notify
-Exec=pulseaudio --daemonize=no --system --realtime --log-target=journal
+ExecStart=pulseaudio --daemonize=no --system --realtime --log-target=journal
 
 [Install]
 WantedBy=multi-user.target
