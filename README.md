@@ -16,7 +16,7 @@ these programs are designed to run on `pi zero` systems, and support both gpio r
 
 the `zero-server.py` program runs as a systemd service on the `pi zero`, and accepts command lines compatible with the `wifi-relay.ino` program, but in addition supports an additional control character: an asterisk.  each time an asterisk is encountered in a command sequence, audio playback of the configured audio source is triggered.  for instance, once set up, a simple command-line to the `relay.py` program can combine relay on/off with audio playback like this:
 
-    d4*5+10-20*
+    ./relay.py d4*5+10-20*
 
 that command instructs the client named `d4` to begin audio playback immediately, wait 5 seconds, turn on its gpio output, wait another 10 seconds, turn off its gpio output, wait another 20 seconds, and finally kick off a second audio playback
 
