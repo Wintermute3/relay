@@ -31,8 +31,8 @@ function AssureSystemd {
   if [ -f /etc/systemd/system/${SERVICE}.service ]; then
     if cmp -s ${SERVICE}.service /etc/systemd/system/${SERVICE}.service; then
       echo systemd service ${SERVICE} is current
-      if systemctl status ${SERVICE}; then
-        echo systemd service is running
+      if systemctl -q is-active ${SERVICE}; then
+        echo systemd service ${SERVICE} is running
       else
         echo starting and enabling systemd ${SERVICE} service
         sudo systemctl daemon-reload
