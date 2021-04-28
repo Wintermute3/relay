@@ -30,7 +30,6 @@ function AssureSystemd {
   SERVICE=${1}
   if [ -f /etc/systemd/system/${SERVICE}.service ]; then
     if cmp -s ${SERVICE}.service /etc/systemd/system/${SERVICE}.service; then
-      echo systemd service ${SERVICE} is current
       if systemctl -q is-active ${SERVICE}; then
         echo systemd service ${SERVICE} is running
       else
