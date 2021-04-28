@@ -14,7 +14,11 @@ the `relay.py` program is designed to easily invoked by keybinding macros or oth
 
 these programs are designed to run on `pi zero` systems, and support both gpio relay control and audio playback via an external usb audio adapter such as the el-cheapo Sabrent stereo unit.  they are configured using the `zero.config` yaml file
 
+the `zero-server.py` program runs as a systemd service on the `pi zero`, and accepts command lines compatible with the `wifi-relay.ino` program, but in addition supports an additional control character: an asterisk.  each time an asterisk is encountered in a command sequence, audio playback of the configured audio source is triggered.  for instance, once set up, a simple command-line to the `relay.py` program can combine relay on/off with audio playback like this:
 
+    d4*5+10-20*
+
+that command instructs the client named `d4` to begin audio playback immediately, wait 5 seconds, turn on its gpio output, wait another 10 seconds, turn off its gpio output, wait another 20 seconds, and finally kick off a second audio playback
 
 ## wifi-relay.ino
 
@@ -24,7 +28,7 @@ when configured on the same wifi network as the host running the `relay.py` prog
 
 see the `relay.json` file for how to coordinate the `NodeMCU` modules with the `relay.py` program
 
-once set up, a simple command-line like this can turn relays on or off:
+once set up, a simple command-line to the `relay.py` program like this can turn relays on or off:
 
     ./relay.py b2+ c3-
 
