@@ -1,14 +1,21 @@
-# repo: relay
+## repo: relay / overview
 
-this repo contains three distinct subprojects, all of which are designed to play nicely together.  the driving program, `relay.py`, sends command sequences to collections of `zero-server.py` and `wifi-relay.ino` clients to enable wifi-mediated relay-closures and audio playback.
+```
+02-May-2021
+Michael Nagy
+bright.tiger@gmail.com
+(813) 731-1470
+```
+
+this repo contains three distinct subprojects, all of which are designed to play nicely together.  the driving program, `relay.py`, sends command sequences to instances of `zero-server.py` and `wifi-relay.ino` clients to enable wifi-mediated relay-closures and audio playback
 
 ## relay.py
 
-wifi client control with automatic arp resolution of `mac` addresses, this program is the orchestrator of a collection of clients running on `arduino`, `pi zero` or `raspberry pi` targets
+wifi client control with automatic arp resolution of `mac` addresses, this program controls instances of clients running on `arduino` or `pi zero` (and in future possibly `raspberry pi`) targets
 
 it is configured via a `relay.json` file which maps `mac` addresses to simple target names, and implements `arp` logic to locate targets specified by name using their `mac` addresses as long as they are on the same local network segment
 
-the `relay.py` program is designed to easily invoked by keybinding macros or other programs such as `wav-player`, which is in a parallel repo
+the `relay.py` program is designed to be easily invoked by keybinding macros or other programs such as `wav-player`, which is in a parallel repo
 
 ## zero-server.py / zero-player.py
 
@@ -18,7 +25,7 @@ the `zero-server.py` program runs as a systemd service on the `pi zero`, and acc
 
     ./relay.py d4*5+10-20*
 
-that command instructs the client named `d4` to begin audio playback immediately, wait 5 seconds, turn on its gpio output, wait another 10 seconds, turn off its gpio output, wait another 20 seconds, and finally kick off a second audio playback
+that command instructs the `pi zero` client named `d4` to begin audio playback immediately, wait 5 seconds, turn on its gpio output, wait another 10 seconds, turn off its gpio output, wait another 20 seconds, and finally kick off a second audio playback
 
 ## wifi-relay.ino
 

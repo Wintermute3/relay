@@ -8,7 +8,7 @@
 #==============================================================================
 
 PROGRAM = 'relay.py'
-VERSION = '2.103.161'
+VERSION = '2.105.021'
 CONTACT = 'bright.tiger@mail.com' # michael nagy
 
 import os, sys, subprocess, json
@@ -82,10 +82,16 @@ def ShowError(Message):
 try:
   Relays = json.load(open(JsonFile))
   try:
+    Macs = []
     for Relay in Relays['relay']:
-      Relay['mac' ] = Relay['mac' ].lower()
-      Relay['name'] = Relay['name'].lower()
+      Mac  = Relay['mac' ].lower()
+      Name = Relay['name'].lower()
+      Relay['mac' ] = Mac
+      Relay['name'] = Name
       Relay['hit' ] = False
+      if Mac in Macs:
+        ShowError("configuration file '%s' defines mac '%s' twice" % (JsonFile, Mac))
+      Macs.append(Mac)
   except:
     ShowError("configuration file '%s' is structured improperly" % (JsonFile))
 except:
@@ -99,13 +105,11 @@ if not len(Relays):
 #------------------------------------------------------------------------------
 
 def ValidCommand(Command):
-  while Command:
-    if not Command[0] in '+-':
-      return False
-    Command = Command[1:]
-    while Command and Command[0] in '0123456789':
-      Command = Command[1:]
-  return True
+  while Command and Command[0] in '0123456789+-*':
+    Command = Command[1:] # skip valid characters
+  if Command:
+    return False # stuck on invalid character
+  return True # all characters are valid
 
 #------------------------------------------------------------------------------
 # validate the argument list and build a command list.  each command toke may

@@ -1,12 +1,17 @@
 {
   "relay": [
-    { "mac": "8C:AA:B5:7C:5D:B2", "name": "A1" },
-    { "mac": "3C:61:05:CF:CC:8D", "name": "B1" },
-    { "mac": "8C:AA:B5:7B:04:77", "name": "C1" },
-    { "mac": "F4:CF:A2:EF:53:ED", "name": "ED" },
-    { "mac": "3C:61:05:D1:3E:6C", "name": "6C" },
+    { "mac": "3C:61:05:CF:CC:8D", "name": "8D" },
     { "mac": "3C:61:05:D0:1E:CB", "name": "CB" },
+    { "mac": "3C:61:05:D1:3E:6C", "name": "6C" },
+    { "mac": "8C:AA:B5:7B:04:77", "name": "77" },
+    { "mac": "8C:AA:B5:7C:5D:B2", "name": "C1" },
+    { "mac": "9C:9C:1F:45:76:A6", "name": "P1" },
+    { "mac": "9C:9C:1F:46:66:BA", "name": "H1" },
+    { "mac": "9C:9C:1F:46:73:F7", "name": "P2" },
+    { "mac": "B8:27:EB:25:60:19", "name": "Z2" },
     { "mac": "B8:27:EB:7D:B7:6D", "name": "Z1" },
-    { "mac": "B8:27:EB:25:60:19", "name": "Z2" }
+    { "mac": "E8:DB:84:96:E4:7E", "name": "P3" },
+    { "mac": "E8:DB:84:97:96:ED", "name": "P4" },
+    { "mac": "F4:CF:A2:EF:53:ED", "name": "ED" }
   ]
 }
