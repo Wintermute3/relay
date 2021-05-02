@@ -5,6 +5,7 @@
     { "mac": "8C:AA:B5:7B:04:77", "name": "C1" },
     { "mac": "F4:CF:A2:EF:53:ED", "name": "ED" },
     { "mac": "3C:61:05:D1:3E:6C", "name": "6C" },
-    { "mac": "3C:61:05:D0:1E:CB", "name": "CB" }
+    { "mac": "3C:61:05:D0:1E:CB", "name": "CB" },
+    { "mac": "B8:27:EB:7D:B7:6D", "name": "Z1" }
   ]
 }
