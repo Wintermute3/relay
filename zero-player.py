@@ -73,7 +73,7 @@ except:
 Relay = None
 try:
   from gpiozero import LED
-  Relay = LED(RelayGpio, active_high=False, initial_value=False)
+  Relay = LED(RelayGpio, active_high=False, initial_value=True)
 except:
   Log('*** ERROR 2: failed to configure gpio %s!' % (RelayGpio))
   os._exit(1)
