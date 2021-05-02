@@ -138,10 +138,10 @@ try:
   for Command in re.split('(\W)', Sequence):
     if Command == '+':
       Log('gpio %d on' % (RelayGpio))
-      Relay.off()
+      Relay.on()
     elif Command == '-':
       Log('gpio %d off' % (RelayGpio))
-      Relay.on()
+      Relay.off()
     elif Command == '*':
       Log("audio '%s' start" % (AudioFile))
       AudioPlayback(AudioFile)
