@@ -137,13 +137,13 @@ try:
       f.write('gpio %d is initially off\n' % (RelayGpio))
   for Command in re.split('(\W)', Sequence):
     if Command == '+':
-      print('gpio %d on' % (RelayGpio))
+      Log('gpio %d on' % (RelayGpio))
       Relay.on()
     elif Command == '-':
-      print('gpio %d off' % (RelayGpio))
+      Log('gpio %d off' % (RelayGpio))
       Relay.off()
     elif Command == '*':
-      print("audio '%s' start" % (AudioFile))
+      Log("audio '%s' start" % (AudioFile))
       AudioPlayback(AudioFile)
     else:
       try:
