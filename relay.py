@@ -8,10 +8,12 @@
 #==============================================================================
 
 PROGRAM = 'relay.py'
-VERSION = '2.105.021'
+VERSION = '2.105.031'
 CONTACT = 'bright.tiger@mail.com' # michael nagy
 
 import os, sys, subprocess, json
+
+DebugFlag = False
 
 #------------------------------------------------------------------------------
 # announce ourselves
@@ -27,6 +29,7 @@ def Splash():
 #------------------------------------------------------------------------------
 
 JsonFile = '%s.json' % (PROGRAM.split('.')[0])
+PeerFile = '%s.peer' % (PROGRAM.split('.')[0])
 
 #------------------------------------------------------------------------------
 # show usage help
@@ -48,21 +51,23 @@ where:
 
 commands may be:
 
+    {name}* . . . . . . play audio track (pi zero only)
     {name}+ . . . . . . turn relay {name} on
     {name}- . . . . . . turn relay {name} off
 
-you may also follow {name} with a sequence of +/- and delay times in
+you may also follow {name} with a sequence of */+/- and delay times in
 seconds, so for instance the following will turn relay 'a1' off (which
-may be its initial state anyway), delay two seconds, turn it on, delay
-another 10 seconds and turn it off again:
+may be its initial state anyway), delay two seconds, turn it on, play
+an audio track, delay another 10 seconds, and turn it off again:
 
-    a1-2+10-
+    a1-2+*10-
 
-command sequences must always start with either + or -, and names must
-be configured in the %s file
+command sequences must always start with either *, + or -, and names
+must be configured in the %s file.  arp-scan results will be
+cached in the %s file.
 '''
   Splash()
-  print(HelpText % (sys.argv[0], JsonFile))
+  print(HelpText % (sys.argv[0], JsonFile, PeerFile))
   os._exit(1)
 
 #------------------------------------------------------------------------------
@@ -101,6 +106,24 @@ if not len(Relays):
   ShowError("configuration file '%s' defines no relays" % (JsonFile))
 
 #------------------------------------------------------------------------------
+# load the json arp-scan cache file and do a quick validation
+#------------------------------------------------------------------------------
+
+try:
+  Peers = json.load(open(PeerFile))
+  try:
+    for Peer in Peers['peers']:
+      IpV4 = Peer['ip' ].lower()
+      Mac  = Peer['mac'].lower()
+    if DebugFlag:
+      print("  loaded '%s' (%d peers)" % (PeerFile, len(Peers['peers'])))
+  except:
+    ShowError("arp-scan cache file '%s' is structured improperly" % (PeerFile))
+    Peers = []
+except:
+  Peers = []
+
+#------------------------------------------------------------------------------
 # return true if the command string is valid
 #------------------------------------------------------------------------------
 
@@ -112,10 +135,10 @@ def ValidCommand(Command):
   return True # all characters are valid
 
 #------------------------------------------------------------------------------
-# validate the argument list and build a command list.  each command toke may
+# validate the argument list and build a command list.  each command token may
 # look like this:
 #
-#    {relayid}(+|-)[<time>|+|-]
+#    {relayid}(*|+|-)[<time>|*|+|-]
 #
 # the items in the square brackets may be repeated as desired.  for instance,
 # to turn on relay a1, wait 30 seconds, and then turn it off:
@@ -126,11 +149,9 @@ def ValidCommand(Command):
 # then wait another 30 seconds to turn it off, then:
 #
 #    a1-120+30-
-#
 #------------------------------------------------------------------------------
 
 RelayCommands = []
-DebugFlag = len(sys.argv) < 2
 
 for arg in sys.argv[1:]:
   if arg == '-h':
@@ -162,29 +183,65 @@ if DebugFlag:
 try:
   Hits = 0
   Handled = []
-  if DebugFlag:
-    print('  arp-scan:')
-  for Line in subprocess.check_output(['sudo', 'arp-scan', '-l', '-q']).decode('ascii').split('\n'):
+
+  # if we loaded a peers file, use those mappings to find the ip
+  # addresses of configured relays by matching mac addresses
+
+  if Peers:
     if DebugFlag:
-      print('    %s' % (Line))
-    if not Line in Handled:
-      Handled.append(Line)
-      try:
-        if Line[0] in '123456789' and ':' in Line:
-          IpAddress, MacAddress = Line.split('\t')
-          MacAddress = MacAddress.lower()
-          for Relay in Relays['relay']:
-            if Relay['mac'] == MacAddress:
-              Relay['hit'] = True
-          for Relay in RelayCommands:
-            if Relay['mac'] == MacAddress:
-              Relay['ip'] = IpAddress
-              if DebugFlag:
-                print('  relay name: %s, mac: %s, ip: %s, cmd: %s' % (
-                  Relay['name'], MacAddress, IpAddress, Relay['command']))
-              Hits += 1
-      except:
-        pass
+      print('  cache load:')
+    for Peer in Peers['peers']:
+      if DebugFlag:
+        print('    %s' % (Peer))
+      for Relay in Relays['relay']:
+        if Relay['mac'] == Peer['mac']:
+          Relay['hit'] = True
+      for Relay in RelayCommands:
+        if Relay['mac'] == Peer['mac']:
+          Relay['ip'] = Peer['ip']
+          if DebugFlag:
+            print('  relay name: %s, mac: %s, ip: %s, cmd: %s' % (
+              Relay['name'], MacAddress, IpAddress, Relay['command']))
+          Hits += 1
+
+  # if we didn't find a peers file, do an arp-scan and create one for
+  # future reference
+
+  if not Peers:
+    if DebugFlag:
+      print('  arp-scan:')
+    Peers = {'peers': []}
+    for Line in subprocess.check_output(['sudo', 'arp-scan', '-l', '-q']).decode('ascii').split('\n'):
+      if DebugFlag:
+        print('    %s' % (Line))
+      if Line and not Line in Handled:
+        Handled.append(Line)
+        try:
+          if Line[0] in '123456789' and ':' in Line:
+            IpAddress, MacAddress = Line.split('\t')
+            MacAddress = MacAddress.lower()
+            Peers['peers'].append({'ip': IpAddress, 'mac': MacAddress})
+            for Relay in Relays['relay']:
+              if Relay['mac'] == MacAddress:
+                Relay['hit'] = True
+            for Relay in RelayCommands:
+              if Relay['mac'] == MacAddress:
+                Relay['ip'] = IpAddress
+                if DebugFlag:
+                  print('  relay name: %s, mac: %s, ip: %s, cmd: %s' % (
+                    Relay['name'], MacAddress, IpAddress, Relay['command']))
+                Hits += 1
+        except:
+          pass
+    with open(PeerFile, 'w') as f:
+      f.write(json.dumps(Peers, indent=2))
+      if DebugFlag:
+        print("  wrote '%s'" % (PeerFile))
+
+  # if we managed to map at least one relay to an ip address, either
+  # via an arp-scan run or from the cached peers file, issue its
+  # commands using curl
+
   if Hits:
     if len(RelayCommands):
       for Command in RelayCommands:
@@ -196,6 +253,7 @@ try:
             print('>> [%s]' % (Line.strip()))
     else:
       ShowError("no relays from configuration file '%s' found" % (JsonFile))
+
   if DebugFlag:
     for Relay in Relays['relay']:
       if Relay['hit']:
@@ -204,6 +262,7 @@ try:
         Status = '*** offline'
       print('  name: %s, mac: %s  %s' % (Relay['name'], Relay['mac'], Status))
     print()
+
 except:
   ShowError("install the 'arp-scan' utility and try again")
 
