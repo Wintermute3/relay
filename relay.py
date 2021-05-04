@@ -13,7 +13,7 @@ CONTACT = 'bright.tiger@mail.com' # michael nagy
 
 import os, sys, subprocess, json
 
-DebugFlag = False
+DebugFlag = False # set with -d on command-line
 
 #------------------------------------------------------------------------------
 # announce ourselves
@@ -47,6 +47,8 @@ where:
 
     -h . . . . . . this help text
     -d . . . . . . enable debug output
+    -f . . . . . . force arp-scan cache refresh
+
     command  . . . command, as listed below (repeat as desired)
 
 commands may be:
@@ -119,9 +121,9 @@ try:
       print("  loaded '%s' (%d peers)" % (PeerFile, len(Peers['peers'])))
   except:
     ShowError("arp-scan cache file '%s' is structured improperly" % (PeerFile))
-    Peers = []
+    Peers = None
 except:
-  Peers = []
+  Peers = None
 
 #------------------------------------------------------------------------------
 # return true if the command string is valid
@@ -156,8 +158,10 @@ RelayCommands = []
 for arg in sys.argv[1:]:
   if arg == '-h':
     ShowHelp()
-  if arg == '-d':
+  elif arg == '-d':
     DebugFlag = True
+  elif arg == '-f':
+    Peers = None
   else:
     ArgCommand = arg.lower()
     Hit = False
