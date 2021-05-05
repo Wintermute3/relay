@@ -32,8 +32,6 @@ A `pi zero` is a client which can accept command sequences from an orchestrator 
    - `git clone https://github.com/Wintermute3/relay.git`
  - change into the (just created) `relay` directory:
    - `cd relay`
- - update the contents to the latest version:
-   - `git pull`
 
 ## run the installation script (it doesn't hurt to do so more than once):
 
