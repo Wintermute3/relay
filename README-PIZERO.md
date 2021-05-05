@@ -27,7 +27,7 @@ A `pi zero` is a client which can accept command sequences from an orchestrator 
  - assure you are in the right directory
    - `cd`
  - remove the `relay` directory
-   - `rm -f relay`
+   - `rm -r relay`
  - clone the wintermute3/relay project from github:
    - `git clone https://github.com/Wintermute3/relay.git`
  - change into the (just created) `relay` directory:
