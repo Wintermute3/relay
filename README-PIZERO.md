@@ -17,20 +17,23 @@ A `pi zero` is a client which can accept command sequences from an orchestrator 
    - `sudo apt install git`
  - change into the 'pi' user's home directory:
    - `cd`
+ - clone the wintermute3/relay project from github:
+   - `git clone https://github.com/Wintermute3/relay.git`
+ - change into the (just created) `relay` directory:
+   - `cd relay`
 
-## if the 'relay' directory already exists in the 'pi' home directory, then update it like this:
+## if the 'relay' directory already exists in the 'pi' home directory you will get an error!  recover like this:
 
- - change into the 'relay' directory:
+ - assure you are in the right directory
+   - `cd`
+ - remove the `relay` directory
+   - `rm -f relay`
+ - clone the wintermute3/relay project from github:
+   - `git clone https://github.com/Wintermute3/relay.git`
+ - change into the (just created) `relay` directory:
    - `cd relay`
  - update the contents to the latest version:
    - `git pull`
-
-## ...otherwise, create it like this:
-
- - clone the wintermute3/relay project from github:
-   - `git clone https://github.com/Wintermute3/relay.git`
- - change into the relay directory:
-   - `cd relay`
 
 ## run the installation script (it doesn't hurt to do so more than once):
 
