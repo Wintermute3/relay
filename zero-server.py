@@ -8,7 +8,7 @@
 #==============================================================================
 
 PROGRAM = 'zero-server.py'
-VERSION = '2.104.271'
+VERSION = '2.105.051'
 CONTACT = 'bright.tiger@gmail.com'
 
 # todo: autostart on boot
@@ -62,6 +62,7 @@ def Feedback(Sequence=''):
   if Sequence:
     Sequence = ' [%s]' % (Sequence)
   Retry = 10
+  Status = ''
   while Retry:
     Retry -= 1
     try:
