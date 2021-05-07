@@ -135,6 +135,7 @@ def AudioAbort():
   try:
     if VlcPlayer:
       VlcPlayer.stop()
+      VlcPlayer = None
   except:
     Log('*** ERROR 5: vlc exception!')
 
