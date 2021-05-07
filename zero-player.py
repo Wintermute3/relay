@@ -16,7 +16,7 @@
 #==============================================================================
 
 PROGRAM = 'zero-player.py'
-VERSION = '2.105.061'
+VERSION = '2.105.071'
 CONTACT = 'bright.tiger@gmail.com'
 
 # plug in sabrent usb audio adapter
@@ -152,6 +152,7 @@ try:
       f.write('gpio %d is initially on\n' % (RelayGpio))
     else:
       f.write('gpio %d is initially off\n' % (RelayGpio))
+  print('***')
   Commands = re.split('(\W)', Sequence)
   print('Commands: %s' % (Commands))
   for Command in Commands:
