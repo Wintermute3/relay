@@ -7,7 +7,7 @@
 #   + . . . . . . . . . turn gpio output on
 #   - . . . . . . . . . turn gpio output off
 #   @ . . . . . . . . . initiate audio playback
-#   $ . . . . . . . . . abort audio playback
+#   % . . . . . . . . . abort audio playback
 #   <integer> . . . . . delay some number of seconds
 #
 # the gpio output always starts out and ends up in the off state.  audio
@@ -169,7 +169,7 @@ try:
     elif Command == '@':
       Log("audio '%s' start" % (AudioFile))
       AudioPlayback(AudioFile)
-    elif Command == '$':
+    elif Command == '%':
       Log("audio abort")
       AudioAbort()
     else:
