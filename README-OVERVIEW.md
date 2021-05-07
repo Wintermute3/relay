@@ -7,7 +7,7 @@ bright.tiger@gmail.com
 (813) 731-1470
 ```
 
-this repo contains three distinct subprojects, all of which are designed to play nicely together.  the driving program, `relay.py`, sends command sequences to instances of `zero-server.py` and `wifi-relay.ino` clients to enable wifi-mediated relay-closures and audio playback
+this repo contains three distinct subprojects, all of which are designed to play nicely together.  the driving program, `relay.py`, sends command sequences to instances of `zero-server.py` and `wifi-relay.ino` clients to enable wifi-mediated relay-closures and audio playback or abort
 
 ## relay.py
 
