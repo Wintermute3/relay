@@ -145,6 +145,7 @@ try:
   Counter = int(sys.argv[1])
   Sequence = sys.argv[2]
   print('sequence [%s]' % (Sequence))
+  print('statusfile [%s]' % (StatusFile))
   with open(StatusFile, 'w') as f:
     f.write('%d\n' % (Counter))
     f.write('%s %s [%s]\n' % (PROGRAM, VERSION, Sequence))
