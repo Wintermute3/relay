@@ -155,7 +155,6 @@ try:
       f.write('gpio %d is initially on\n' % (RelayGpio))
     else:
       f.write('gpio %d is initially off\n' % (RelayGpio))
-  print('***')
   Commands = re.split('(\W)', Sequence)
   for Command in Commands:
     if Command:
