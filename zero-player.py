@@ -116,7 +116,7 @@ def AudioPlayback(AudioFile=None):
       VlcPlayer.play()
     else:
       if VlcPlayer:
-        print('vlc state %d' % (VlcPlayer.get_state())
+        print('vlc state %d' % (VlcPlayer.get_state()))
         if VlcPlayer.get_state() != 6: # ENDED
           Log('vlc audio playback in progress')
           while VlcPlayer.get_state() != 6: # ENDED
