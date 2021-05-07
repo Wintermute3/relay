@@ -157,9 +157,9 @@ try:
       f.write('gpio %d is initially off\n' % (RelayGpio))
   print('***')
   Commands = re.split('(\W)', Sequence)
-  print('Commands: %s' % (Commands))
   for Command in Commands:
-    print('Command: %s' % (Command))
+    if Command:
+      print('Command: %s' % (Command))
     if Command == '+':
       Log('gpio %d on' % (RelayGpio))
       Relay.off()
