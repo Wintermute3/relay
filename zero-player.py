@@ -7,6 +7,7 @@
 #   + . . . . . . . . . turn gpio output on
 #   - . . . . . . . . . turn gpio output off
 #   * . . . . . . . . . initiate audio playback
+#   ! . . . . . . . . . abort audio playback
 #   <integer> . . . . . delay some number of seconds
 #
 # the gpio output always starts out and ends up in the off state.  audio
@@ -15,7 +16,7 @@
 #==============================================================================
 
 PROGRAM = 'zero-player.py'
-VERSION = '2.104.271'
+VERSION = '2.105.061'
 CONTACT = 'bright.tiger@gmail.com'
 
 # plug in sabrent usb audio adapter
@@ -91,12 +92,16 @@ except:
   os._exit(1)
 
 #==============================================================================
+# the vlc player object
+#==============================================================================
+
+VlcPlayer = None
+
+#==============================================================================
 # start playing audiofile unless still busy with last one.  if called with no
 # audiofile and a previous playback is still in progress, wait for it to
 # finish before returning (exit processing)
 #==============================================================================
-
-VlcPlayer = None
 
 def AudioPlayback(AudioFile=None):
   global VlcPlayer
@@ -119,6 +124,18 @@ def AudioPlayback(AudioFile=None):
   except:
     Log('*** ERROR 4: vlc exception!')
     Log("             try: 'sudo apt install pulseaudio'")
+
+#==============================================================================
+# stop playing any active media
+#==============================================================================
+
+def AudioAbort():
+  global VlcPlayer
+  try:
+    if VlcPlayer:
+      VlcPlayer.stop()
+  except:
+    Log('*** ERROR 5: vlc exception!')
 
 #==============================================================================
 # main
@@ -145,6 +162,9 @@ try:
     elif Command == '*':
       Log("audio '%s' start" % (AudioFile))
       AudioPlayback(AudioFile)
+    elif Command == '!':
+      Log("audio abort")
+      AudioAbort()
     else:
       try:
         Delay = int(Command)

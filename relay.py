@@ -8,7 +8,7 @@
 #==============================================================================
 
 PROGRAM = 'relay.py'
-VERSION = '2.105.031'
+VERSION = '2.105.061'
 CONTACT = 'bright.tiger@mail.com' # michael nagy
 
 import os, sys, subprocess, json
@@ -54,10 +54,11 @@ where:
 commands may be:
 
     {name}* . . . . . . play audio track (pi zero only)
+    {name}! . . . . . . abort audio playback (pi zero only)
     {name}+ . . . . . . turn relay {name} on
     {name}- . . . . . . turn relay {name} off
 
-you may also follow {name} with a sequence of */+/- and delay times in
+you may also follow {name} with a sequence of */!/+/- and delay times in
 seconds, so for instance the following will turn relay 'a1' off (which
 may be its initial state anyway), delay two seconds, turn it on, play
 an audio track, delay another 10 seconds, and turn it off again:
@@ -130,7 +131,7 @@ except:
 #------------------------------------------------------------------------------
 
 def ValidCommand(Command):
-  while Command and Command[0] in '0123456789+-*':
+  while Command and Command[0] in '0123456789+-*!':
     Command = Command[1:] # skip valid characters
   if Command:
     return False # stuck on invalid character
@@ -140,7 +141,7 @@ def ValidCommand(Command):
 # validate the argument list and build a command list.  each command token may
 # look like this:
 #
-#    {relayid}(*|+|-)[<time>|*|+|-]
+#    {relayid}(*|!|+|-)[<time>|*|!|+|-]
 #
 # the items in the square brackets may be repeated as desired.  for instance,
 # to turn on relay a1, wait 30 seconds, and then turn it off:
