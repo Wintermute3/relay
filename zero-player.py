@@ -176,8 +176,9 @@ try:
       try:
         Delay = int(Command)
         print('delay %d...' % (Delay), end='')
+        sys.stdout.flush()
         time.sleep(Delay)
-        print()
+        print('done')
       except:
         pass
 except:
