@@ -16,7 +16,7 @@
 #==============================================================================
 
 PROGRAM = 'zero-player.py'
-VERSION = '2.105.071'
+VERSION = '2.107.021'
 CONTACT = 'bright.tiger@gmail.com'
 
 # plug in sabrent usb audio adapter
@@ -42,9 +42,9 @@ def Log(Message):
   print('%s' % (Message))
   syslog(Message)
 
-print
+print()
 Log('%s %s' % (PROGRAM, VERSION))
-print
+print()
 
 #==============================================================================
 # load the yaml configuration file.  it is expected to define RelayGpio and
@@ -67,14 +67,13 @@ except:
   os._exit(1)
 
 #==============================================================================
-# configure the GPIO output and assure it is initally turned off (raspberry
-# pi zero gpios are active low)
+# configure the GPIO output and assure it is initally turned off
 #==============================================================================
 
 Relay = None
 try:
   from gpiozero import LED
-  Relay = LED(RelayGpio, active_high=False, initial_value=False)
+  Relay = LED(RelayGpio, active_high=True, initial_value=False)
 except:
   Log('*** ERROR 2: failed to configure gpio %s!' % (RelayGpio))
   os._exit(1)
@@ -144,6 +143,8 @@ def AudioAbort():
 #==============================================================================
 
 try:
+  if len(sys.argv) < 3:
+    print('expected 2 arguments: <counter> and <sequence>')
   Counter = int(sys.argv[1])
   Sequence = sys.argv[2]
   print('sequence [%s]' % (Sequence))
@@ -161,10 +162,10 @@ try:
       print('Command: %s' % (Command))
     if Command == '+':
       Log('gpio %d on' % (RelayGpio))
-      Relay.off()
+      Relay.on()
     elif Command == '-':
       Log('gpio %d off' % (RelayGpio))
-      Relay.on()
+      Relay.off()
     elif Command == '@':
       Log("audio '%s' start" % (AudioFile))
       AudioPlayback(AudioFile)
@@ -174,8 +175,9 @@ try:
     else:
       try:
         Delay = int(Command)
-        print('delay %d' % (Delay))
+        print('delay %d...' % (Delay), end='')
         time.sleep(Delay)
+        print()
       except:
         pass
 except:
