@@ -1,12 +1,23 @@
 #==============================================================================
-# PROGRAM = 'zero.config'
-# VERSION = '2.104.271'
+# PROGRAM = 'zero.config.default'
+# VERSION = '2.107.031'
 # CONTACT = 'bright.tiger@gmail.com'
+#
+# note: this file will be copied to 'zero.config' upon installation if that
+#       file does not already exist.  make any edits in that copy, not in
+#       the 'zero.config.default' file to avoid conflicts with get pull
 #
 # some possible values for RelayGpio:
 #
+#   RelayGpio =  4 # pin  7 / for real external relay control
 #   RelayGpio = 23 # pin 16 / for real external relay control
 #   RelayGpio = 47 # pin BCM / built-in activity monitor LED for testing
+#
+# also note the following pins:
+#
+#   pin 1 - 3.3v (don't use for relay module - inadequate power available)
+#   pins 2 or 4 - 5v (wire to Vcc of relay module)
+#   pin 6 - gnd (wire to gnd of relay module)
 #
 # some possible values for AudioFile:
 #

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PROGRAM='zero-install.sh'
-VERSION='2.104.271'
+VERSION='2.107.031'
 CONTACT='bright.tiger@mail.com' # michael nagy
 
 #============================================================================
@@ -134,6 +134,18 @@ fi
 
 AssureSystemd pulse
 AssureSystemd zero
+
+#============================================================================
+# create the zero.config file from the default if necessary
+#============================================================================
+
+if [ -f zero.config ]; then
+  echo 'the zero.config file already exists'
+else
+  echo 'creating the zero.config file...'
+  cp zero.config.default zero.config
+  echo '  created the zero.config file'
+fi
 
 #============================================================================
 # report and exit
