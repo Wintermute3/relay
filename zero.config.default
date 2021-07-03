@@ -5,7 +5,7 @@
 #
 # note: this file will be copied to 'zero.config' upon installation if that
 #       file does not already exist.  make any edits in that copy, not in
-#       the 'zero.config.default' file to avoid conflicts with git pull
+#       this 'zero.config.default' file to avoid conflicts with git pull
 #
 # some possible values for RelayGpio:
 #
@@ -18,6 +18,10 @@
 #   pin 1 - 3.3v (don't use for relay module - inadequate power available)
 #   pins 2 or 4 - 5v (wire to Vcc of relay module)
 #   pin 6 - gnd (wire to gnd of relay module)
+#
+# for additional details, see:
+#
+#    https://www.theengineeringprojects.com/wp-content/uploads/2021/03/raspberry-pi-zero-5.png
 #
 # some possible values for AudioFile:
 #

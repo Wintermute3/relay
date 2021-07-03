@@ -144,6 +144,17 @@ if [ -f zero.config ]; then
 else
   echo 'creating the zero.config file...'
   cp zero.config.default zero.config
+cat << EOF > zero.config
+#==============================================================================
+# PROGRAM = 'zero.config'
+# VERSION = '2.107.031'
+# CONTACT = 'bright.tiger@gmail.com'
+#
+# note: this file was copied from 'zero.config.default' upon installation if
+#       it did not already exist.  make any edits in this copy, not in the
+#       original 'zero.config.default' file to avoid conflicts with git pull
+EOF
+tail -n +9 zero.config.default >> zero.config
   echo '  created the zero.config file'
 fi
 
