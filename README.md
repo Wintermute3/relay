@@ -11,7 +11,7 @@ This repo contains several components which are designed to play nicely together
 
 ### relay.py
 
-The program `relay.py` runs on the _orchestrator_ system (expected to be a `raspberry pi`) and sends _player_ command sequences over WiFi to instances of `raspberry pi`, `pi zero` and `nodemcu` _clients_ to control relay-closures and audio playback.
+The program `relay.py` runs on the _orchestrator_ system (expected to be a `raspberry pi`) and sends _player_ command sequences over WiFi to instances of `raspberry pi`, `pi zero` and `nodemcu` _players_ to control relay-closures and audio playback.
 
 It finds WiFi client addresses using automatic arp resolution (discovery) of `mac` addresses.
 
@@ -35,7 +35,7 @@ Each time an ampersand is encountered in a command sequence, audio playback of t
 For instance, once set up, a simple command-line to the `relay.py` program can combine relay on/off with audio playback like this:
 
 	./relay.py d4@5+10-20@
-That command instructs the `player` client named `d4` to begin audio playback immediately, wait 5 seconds, turn on its gpio output, wait another 10 seconds, turn off its gpio output, wait another 20 seconds, and finally kick off a second audio playback.
+That command instructs the `player` named `d4` to begin audio playback immediately, wait 5 seconds, turn on its gpio output, wait another 10 seconds, turn off its gpio output, wait another 20 seconds, and finally kick off a second audio playback.
 
 ### nodemcu-player.ino
 
@@ -44,7 +44,7 @@ This program is an `arduino` sketch designed to run on `NodeMCU` modules.
 See also:
 
 	nodemcu-readme.md
-Except for lack of audio playback support, it is compatible with the other `player` clients.
+Except for lack of audio playback support, it is compatible with the other `player` systems.
 
 When configured on the same WiFi network as the host running the `relay.py` program, it can be controlled via simple command-lines.
 

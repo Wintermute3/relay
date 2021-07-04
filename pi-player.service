@@ -1,5 +1,5 @@
 [Unit]
-Description=server.py - gpio/audio player client
+Description=server.py - gpio/audio player
 
 [Service]
 ExecStartPre=/bin/sleep 10

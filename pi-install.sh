@@ -5,14 +5,14 @@ VERSION='2.107.041'
 CONTACT='bright.tiger@mail.com' # michael nagy
 
 #============================================================================
-# set up a raspberry pi in either orchestrator or client mode as selected
-# by the command-line parameter, or a pi zero in client mode
+# set up a raspberry pi in either orchestrator or player mode as selected
+# by the command-line parameter, or a pi zero in player mode
 #
 # in orchestrator mode, set things up so that the the relay script is
 # accessible via a shortcut from anywhere on the system, and do a couple
 # of other house-keeping things
 #
-# in client mode, set things up so that the pulseaudio and player services
+# in player mode, set things up so that the pulseaudio and player services
 # autostart on boot, and do a couple of other house-keeping things
 #============================================================================
 
