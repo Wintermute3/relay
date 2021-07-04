@@ -1,11 +1,47 @@
 //==================================================================
-// minimal web WebServer controlling a single digital output
-// intended to control a relay
+// a minimal web server that runs on a NodeMCU module.  compile and
+// download it to a NodeMCU using the Arduino IDE.
+//
+// controls a relay via a gpio digital output, currently configured
+// as D0 in active-high mode.  supports a subset of the 'player'
+// protocol that the orchestrator uses to control relays and
+// trigger audio playback (relay only for this implementation).
+//
+// Note: There must be an entry in the WiFiNetworks[] table below
+// that matches the target WiFi network.  Add one if necessary!
 //==================================================================
 
-#define VERSION "2.104.242"
-#define PROGRAM "wifi-relay"
+#define VERSION "2.107.042"
+#define PROGRAM "nodemcu-player"
 #define CONTACT "bright.tiger@gmail.com"
+
+//------------------------------------------------------------------
+// some typedefs to keep us honest
+//------------------------------------------------------------------
+
+typedef const               char * ccptr ;
+typedef const   signed      int    cint16;
+typedef       unsigned long int     bit32;
+
+//------------------------------------------------------------------
+// we need a wifi network connection to receive commands from the
+// orchestrator, and will pick the one with the strongest signal
+// from the following list.  if you need to add one to the list,
+// increment the WIFI_NETWORKS value, and add a new line to the
+// WiFiNetworks[] table.  Note: no comma at the end of the last
+// line.
+//------------------------------------------------------------------
+
+typedef struct {
+  ccptr Location, Ssid, Password;
+} t_WiFiNetwork;
+
+#define WIFI_NETWORKS 2
+
+const t_WiFiNetwork WiFiNetworks[WIFI_NETWORKS] = {
+  { "lab"  , "werecow25", "micro123" },
+  { "house", "werecow29", "micro123" }
+};
 
 //------------------------------------------------------------------
 // diagnostic and status information is sent to the serial console
@@ -25,7 +61,7 @@
 // you need to know the ip address assigned to the wifi relay when
 // it connects to the network, but that will potentially change
 // every time it connects to the wifi network.  you can find it
-// from the dhcp WebServer table on your wifi router, or by using the
+// from the dhcp server table on your wifi router, or by using the
 // arp-scan utility, but either way you will want to know the mac
 // address of the wifi relay board.  to find that, plug it in and
 // turn on the serial monitor (at 115200) in the arduino ide, and
@@ -34,7 +70,7 @@
 // last two digits on the board itself for future reference.
 //
 // if you can access the wifi router web interface you may be able
-// to see the assigned ip address in the dhcp WebServer status table.
+// to see the assigned ip address in the dhcp server status table.
 // you may also have to option of making that address static, or
 // locking it to the mac address.  if you have that option, take
 // it and then things won't change unexpectidly in the future.
@@ -68,44 +104,12 @@
 // #define DEBUG
 
 //------------------------------------------------------------------
-// plug in your wifi credentials here
-//------------------------------------------------------------------
-
-const char* ssid     = "werecow29";
-const char* password = "micro123" ;
-
-//------------------------------------------------------------------
 // the actual wifi interface library and objects
 //------------------------------------------------------------------
 
 #include <ESP8266WiFi.h>
 WiFiServer WebServer(80);
 String Header;
-
-//------------------------------------------------------------------
-// some typedefs to keep us honest
-//------------------------------------------------------------------
-
-typedef const               char * ccptr ;
-typedef const   signed      int    cint16;
-typedef       unsigned long int     bit32;
-
-//------------------------------------------------------------------
-// we need a wifi network connection to report data to corlysis,
-// and will pick the one with the strongest signal from the
-// following list
-//------------------------------------------------------------------
-
-typedef struct {
-  ccptr Location, Ssid, Password;
-} t_WiFiNetwork;
-
-#define WIFI_NETWORKS 2
-
-const t_WiFiNetwork WiFiNetwork[WIFI_NETWORKS] = {
-  { "lab"  , "werecow25", "micro123" },
-  { "house", "werecow29", "micro123" }
-};
 
 //------------------------------------------------------------------
 // some crude timing variables
@@ -185,12 +189,12 @@ void setup() {
                         Hidden ? 'H' : 'V',
                         Ssid.c_str());
           for (int Network = 0; Network < WIFI_NETWORKS; Network++) {
-            if (Ssid == WiFiNetwork[Network].Ssid) {
+            if (Ssid == WiFiNetworks[Network].Ssid) {
               if (Rssi > BestRssi) {
                 BestRssi = Rssi;
-                BestLocation = WiFiNetwork[Network].Location;
-                BestSsid     = WiFiNetwork[Network].Ssid    ;
-                BestPassword = WiFiNetwork[Network].Password;
+                BestLocation = WiFiNetworks[Network].Location;
+                BestSsid     = WiFiNetworks[Network].Ssid    ;
+                BestPassword = WiFiNetworks[Network].Password;
           } } }
           delay(0);
         }
@@ -226,7 +230,7 @@ void setup() {
 }
 
 //------------------------------------------------------------------
-// run the simple web WebServer which allows for on/off relay control
+// run the simple web server which allows for on/off relay control
 //------------------------------------------------------------------
 
 void loop(){

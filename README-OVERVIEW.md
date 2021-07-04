@@ -1,13 +1,13 @@
 ## repo: relay / overview
 
 ```
-06-May-2021
+04-Jul-2021
 Michael Nagy
 bright.tiger@gmail.com
 (813) 731-1470
 ```
 
-this repo contains three distinct subprojects, all of which are designed to play nicely together.  the driving program, `relay.py`, sends command sequences to instances of `zero-server.py` and `wifi-relay.ino` clients to enable wifi-mediated relay-closures and audio playback or abort
+this repo contains several distinct subprojects, all of which are designed to play nicely together using the `player` protocol.  the orchestrator program, `relay.py`, sends command sequences to instances of `zero-server.py` and `wifi-relay.ino` clients to enable wifi-mediated relay-closures and audio playback or abort
 
 ## relay.py
 
