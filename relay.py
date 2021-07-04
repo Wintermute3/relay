@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 #==============================================================================
-# this program looks up wifi relays on the same subnet as the host where it
-# is running by mac address and sends on/off commands to them using curl.  it
-# is configured (mac/name mappings) using the relay.json file, which should
-# be present next to this file.
+# this program looks up player clients on the same subnet as the host where it
+# is running by mac address and sends commands to them using curl.  it is
+# configured (mac/name mappings) using the relay.json file, which should be
+# present next to this file.
 #==============================================================================
 
 PROGRAM = 'relay.py'
-VERSION = '2.105.071'
+VERSION = '2.107.041'
 CONTACT = 'bright.tiger@mail.com' # michael nagy
 
 import os, sys, subprocess, json
@@ -53,8 +53,8 @@ where:
 
 commands may be:
 
-    {name}@ . . . . . . play audio track (pi zero only)
-    {name}% . . . . . . abort audio playback (pi zero only)
+    {name}@ . . . . . . play audio track (not on nodemcu)
+    {name}% . . . . . . abort audio playback (not on nodemcu)
     {name}+ . . . . . . turn relay {name} on
     {name}- . . . . . . turn relay {name} off
 

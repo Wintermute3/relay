@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
 
 #==============================================================================
-# turn a raspberry pi zero into a gpio sequencer / audio player node
-# compatible with the arduino-based relay.ino program.  utilize the external
-# companion program 'zero-player.py' to actually effect actions, and monitor
-# its status via its text output file 'zero.status'.
+# turn a raspberry pi or pi zero into a gpio sequencer / audio player client
+# compatible with the arduino-based nodemcu-player.ino program.  utilize the
+# external companion program 'pi-player.py' to actually effect actions, and
+# monitor its status via its text output file 'pi-player.status'.
 #==============================================================================
 
-PROGRAM = 'zero-server.py'
-VERSION = '2.105.051'
+PROGRAM = 'pi-server.py'
+VERSION = '2.107.041'
 CONTACT = 'bright.tiger@gmail.com'
-
-# todo: autostart on boot
 
 import os, uuid, socket
 from flask import Flask, request
 from time import sleep
 
-StatusFile = '/home/pi/relay/zero.status'
+StatusFile = '/home/pi/relay/pi-player.status'
 
 #==============================================================================
 # get the mac address of the active interface
@@ -53,7 +51,7 @@ def getMAC(interface='wlan0'):
   return str[0:17]
 
 #==============================================================================
-# report the most recent status posted by the zero-sequence.py utility
+# report the most recent status posted by the pi-player.py utility
 #==============================================================================
 
 Counter = 0
@@ -79,13 +77,13 @@ def Feedback(Sequence=''):
   return '<br>'.join(Text.split('\n'))
 
 #==============================================================================
-# asynchronously kick off zero-sequence.py to run the command sequence
+# asynchronously kick off pi-player.py to run the command sequence
 #==============================================================================
 
 def RunSequence(Sequence):
   global Counter
   Counter += 1
-  os.system('/home/pi/relay/zero-player.py %d %s &' % (Counter, Sequence))
+  os.system('/home/pi/relay/pi-player.py %d %s &' % (Counter, Sequence))
   sleep(0.2)
   return Feedback(Sequence)
 
