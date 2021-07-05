@@ -9,37 +9,37 @@ One or more _player_ (`raspberry pi` or `pi zero`) systems can accept command se
 
 See also:
 
-  README.md
-  readme-pi.md
-  readme-nodemcu.md
+	README.md
+	readme-pi.md
+	readme-nodemcu.md
 ### Set up a `Raspberry Pi` as an _orchestrator_
 
 Log on as the `pi` user and assure that the `pi` is connected to your WiFi (which is assumed to give access to the Internet).
 
 Get a command prompt and assure git is installed:
 
-  sudo apt install git
+	sudo apt install git
 Change into the `pi` user's home directory and check to see if the `relay` directory already exists:
 
-  cd
-  ls -al
+	cd
+	ls -al
 Get an up-to-date copy of the `relay` repo as follows:
 
 If the `relay` directory does not exist, do this:
 
-  git clone https://github.com/Wintermute3/relay.git
-  cd relay
+	git clone https://github.com/Wintermute3/relay.git
+	cd relay
 If the `relay` directory does exist, do this instead:
 
-  cd relay
-  git pull
+	cd relay
+	git pull
 Either way, you should now be in the `relay` directory with an up-to-date copy of the repo.
 
 ### Set up the _orchestrator_
 
 To set up the _orchestrator_, run the installation script with the _orchestrator_ option (it doesn't hurt to do so more than once):
 
-  ./pi-install.sh orchestrator
+	./pi-install.sh orchestrator
 After the script finishes, you should be good.
 
 If you run it again it should display a `success` message to confirm all went well, but otherwise do nothing.
