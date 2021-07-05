@@ -43,4 +43,11 @@ To set up the _orchestrator_, run the installation script with the _orchestrator
 After the script finishes, you should be good.
 
 If you run it again it should display a `success` message to confirm all went well, but otherwise do nothing.
+
+### Test the `relay.json` file
+
+The installer creates the `relay.json` file if it doesn't already exist, but thereafter you can edit it to add or remove _player_ systems.  Each time the `relay.py` program runs it validates the file, so it is always a good idea to run:
+
+	./relay.py
+after installation, and again after each edit to the file, to assure it is still valid.  If `relay.py` runs without error, you are good to go.
 #

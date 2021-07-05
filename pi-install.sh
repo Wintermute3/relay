@@ -177,6 +177,18 @@ if [ "${TARGET}" == 'orchestrator' ]; then
     echo installed the relay helper script
     DELTA=1
   fi
+
+  #============================================================================
+  # initialize the relay.json file if it doesn't already exist
+  #============================================================================
+
+  if [ -f relay.json ]; then
+    echo the relay.json file already exists
+  else
+    cp relay.default relay.json
+    echo initialized the relay.json file
+    DELTA=1
+  fi
 fi
 
 #============================================================================
