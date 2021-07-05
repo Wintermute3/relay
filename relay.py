@@ -8,11 +8,12 @@
 #==============================================================================
 
 PROGRAM = 'relay.py'
-VERSION = '2.107.041'
+VERSION = '2.107.051'
 CONTACT = 'bright.tiger@mail.com' # michael nagy
 
 import os, sys, subprocess, json, shutil
 
+NameMap   = False # set with -n on command-line
 DebugFlag = False # set with -d on command-line
 ForceScan = False # set with -f on command-line
 
@@ -45,11 +46,12 @@ def ShowHelp():
 
 usage:
 
-    %s [-h] [-d] [-f] command {command {command...}}
+    %s [-h] [-n] [-d] [-f] command {command {command...}}
 
 where:
 
     -h . . . . . . this help text
+    -n . . . . . . show name to mac mapping table status
     -d . . . . . . enable debug output
     -f . . . . . . force arp-scan cache update
 
@@ -58,11 +60,11 @@ where:
 commands may be:
 
     {name}@ . . . . . . play audio track (not on nodemcu)
-    {name}% . . . . . . abort audio playback (not on nodemcu)
+    {name}%% . . . . . . abort audio playback (not on nodemcu)
     {name}+ . . . . . . turn relay {name} on
     {name}- . . . . . . turn relay {name} off
 
-you may also follow {name} with a sequence of @/%/+/- and delay times in
+you may also follow {name} with a sequence of @/%%/+/- and delay times in
 seconds, so for instance the following will turn relay 'a1' off (which
 may be its initial state anyway), delay two seconds, turn it on, play
 an audio track, delay another 10 seconds, and turn it off again:
@@ -177,6 +179,8 @@ for arg in sys.argv[1:]:
     DebugFlag = True
   elif arg == '-f':
     ForceScan = True
+  elif arg == '-n':
+    NameMap = True
   else:
     ArgCommand = arg.lower()
     Hit = False
@@ -298,6 +302,40 @@ try:
 
 except:
   ShowError("install the 'arp-scan' utility and try again")
+
+if NameMap:
+  List = []
+  NameWidth = 4
+  for Relay in Relays['relay']:
+    Name = Relay['name']
+    NameWidth = max(NameWidth, len(Name))
+  print()
+  print('  %*s  mac               ip'              % (NameWidth, 'name'))
+  print( '  %s  ----------------- ---------------' % ('-' * NameWidth  ))
+  for Relay in Relays['relay']:
+    Name = Relay['name']
+    Mac  = Relay['mac']
+    if 'ip' in Relay:
+      Ip = Relay['ip']
+    else:
+      Ip = ''
+    List.append('%*s  %17s  %s' % (NameWidth, Name, Mac, Ip))
+  for Item in sorted(List):
+    print('  %s' % (Item))
+  List = []
+  for Peer in Peers['peers']:
+    Mac = Peer['mac']
+    Ip  = Peer['ip' ]
+    Hit = False
+    for Relay in Relays['relay']:
+      if Mac == Relay['mac']:
+        Hit = True
+    if not Hit:
+      List.append('%*s  %17s  %s' % (NameWidth, '', Mac, Ip))
+  print( '  %s  ----------------- ---------------' % ('-' * NameWidth  ))
+  for Item in sorted(List):
+    print('  %s' % (Item))
+  print()
 
 #==============================================================================
 # end

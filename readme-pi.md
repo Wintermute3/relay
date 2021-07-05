@@ -62,9 +62,8 @@ By default, the `pi` is configured to use GPIO 4 as an active high output to con
 	https://www.raspberrypi.org/documentation/usage/gpio/images/GPIO-Pinout-Diagram-2.png
 The audio playback file is also set in the `pi-player.config` file in a similar fashion.  Audio playback is via an external usb audio adapter such as the el-cheapo Sabrent stereo unit.
 
-To test from a command line on the `player` itself, try a command such as:
+To test from a command line on the _player_ itself, try a command such as:
 
 	~/relay/pi-player.py 1 5+2-@
 That should delay 5 seconds, turn on the relay, delay two seconds, turn the relay off, and start playback of the configured sound file.  The initial `1` parameter can be any integer, but is required.  It is used as a correlator when using the web interface.
-
 #

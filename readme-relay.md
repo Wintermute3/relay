@@ -1,6 +1,6 @@
 # relay/readme-relay.md
 ```
-04-Jul-2021
+05-Jul-2021
 Michael Nagy
 bright.tiger@gmail.com
 (813) 731-1470
@@ -46,8 +46,21 @@ If you run it again it should display a `success` message to confirm all went we
 
 ### Test the `relay.json` file
 
-The installer creates the `relay.json` file if it doesn't already exist, but thereafter you can edit it to add or remove _player_ systems.  Each time the `relay.py` program runs it validates the file, so it is always a good idea to run:
+The installer creates the `relay.json` file if it doesn't already exist, but thereafter you can edit it to add or remove _player_ systems.
+
+Each time the `relay.py` program runs it validates the file, so it is always a good idea to run after installation, and again after each edit to the file, to assure it is still valid:
+:
 
 	./relay.py
-after installation, and again after each edit to the file, to assure it is still valid.  If `relay.py` runs without error, you are good to go.
+If `relay.py` runs without error, you are good to go.
+
+If you add new _player_ systems to the network, assure they are added to the _orchestrator_ `arp-scan` cache by:
+
+	./relay.py -f
+You can also display the current name mapping table like this:
+
+	./relay.py -n
+To see all available options, ask for help like this:
+
+	./relay.py -h
 #
