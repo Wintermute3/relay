@@ -14,6 +14,7 @@ CONTACT = 'bright.tiger@mail.com' # michael nagy
 import os, sys, subprocess, json, shutil
 
 DebugFlag = False # set with -d on command-line
+ForceScan = False # set with -f on command-line
 
 #------------------------------------------------------------------------------
 # announce ourselves
@@ -40,17 +41,17 @@ PeerFile = '%s.peer' % (PROGRAM.split('.')[0])
 
 def ShowHelp():
   HelpText = '''\
-    this program controls wifi relays
+    this program controls wifi relays and audio playback
 
 usage:
 
-    %s [-h] [-d] command {command {command...}}
+    %s [-h] [-d] [-f] command {command {command...}}
 
 where:
 
     -h . . . . . . this help text
     -d . . . . . . enable debug output
-    -f . . . . . . force arp-scan cache refresh
+    -f . . . . . . force arp-scan cache update
 
     command  . . . command, as listed below (repeat as desired)
 
@@ -77,11 +78,17 @@ cached in the %s file.
   os._exit(1)
 
 #------------------------------------------------------------------------------
-# error exit
+# warning / error exit
 #------------------------------------------------------------------------------
 
-def ShowError(Message):
+def ShowMessage(Message):
   print('*** %s!' % (Message))
+
+def ShowInfo(Message):
+  ShowMessage('info: %s' % (Message))
+
+def ShowError(Message):
+  ShowMessage('error: %s' % (Message))
   print('*** try -h for help!')
   print()
   os._exit(1)
@@ -105,7 +112,7 @@ try:
       Relay['name'] = Name
       Relay['hit' ] = False
       if Mac in Macs:
-        ShowError("configuration file '%s' defines mac '%s' twice" % (JsonFile, Mac))
+        ShowInfo("configuration file '%s' defines mac '%s' multiple times" % (JsonFile, Mac))
       Macs.append(Mac)
   except:
     ShowError("configuration file '%s' is structured improperly" % (JsonFile))
@@ -169,7 +176,7 @@ for arg in sys.argv[1:]:
   elif arg == '-d':
     DebugFlag = True
   elif arg == '-f':
-    Peers = None
+    ForceScan = True
   else:
     ArgCommand = arg.lower()
     Hit = False
@@ -216,13 +223,16 @@ try:
               Relay['name'], MacAddress, IpAddress, Relay['command']))
           Hits += 1
 
-  # if we didn't find a peers file, do an arp-scan and create one for
-  # future reference
+  # if we didn't find a peers file, or if the -f command-line option was
+  # specified, do an arp-scan and merge the result into the peers file
 
-  if not Peers:
+  if ForceScan or not Peers:
     if DebugFlag:
       print('  arp-scan:')
-    Peers = {'peers': []}
+    if not Peers:
+      Peers = {'peers': []}
+    if DebugFlag:
+      print('  starting with %d peers' % (len(Peers['peers'])))
     for Line in subprocess.check_output(['sudo', 'arp-scan', '-l', '-q']).decode('ascii').split('\n'):
       if DebugFlag:
         print('    %s' % (Line))
@@ -232,7 +242,17 @@ try:
           if Line[0] in '123456789' and ':' in Line:
             IpAddress, MacAddress = Line.split('\t')
             MacAddress = MacAddress.lower()
-            Peers['peers'].append({'ip': IpAddress, 'mac': MacAddress})
+            Hit = False
+            for Peer in Peers['peers']:
+              if Peer['mac'] == MacAddress:
+                Hit = True
+                if Peer['ip'] != IpAddress:
+                  Peer['ip'] = IpAddress
+                  if DebugFlag:
+                    print('  updated mac %s to ip %s' % (MacAddress, IpAddress))
+            if not Hit:
+              Peers['peers'].append({'ip': IpAddress, 'mac': MacAddress})
+              print('  appended mac %s as ip %s' % (MacAddress, IpAddress))
             for Relay in Relays['relay']:
               if Relay['mac'] == MacAddress:
                 Relay['hit'] = True
@@ -248,6 +268,7 @@ try:
     with open(PeerFile, 'w') as f:
       f.write(json.dumps(Peers, indent=2))
       if DebugFlag:
+        print('  ending with %d peers' % (len(Peers['peers'])))
         print("  wrote '%s'" % (PeerFile))
 
   # if we managed to map at least one relay to an ip address, either
