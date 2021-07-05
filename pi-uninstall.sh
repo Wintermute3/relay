@@ -5,8 +5,8 @@ VERSION='2.107.051'
 CONTACT='bright.tiger@mail.com' # michael nagy
 
 #============================================================================
-# uninstall systemd services previously installed by the `pi-install.sh`
-# script
+# uninstall systemd services and shortcuts previously installed by
+# the `pi-install.sh` script
 #============================================================================
 
 echo
