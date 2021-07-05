@@ -1,11 +1,11 @@
 #==============================================================================
-# PROGRAM = 'zero.config.default'
-# VERSION = '2.107.031'
+# PROGRAM = 'pi-player.default'
+# VERSION = '2.107.041'
 # CONTACT = 'bright.tiger@gmail.com'
 #
-# note: this file will be copied to 'zero.config' upon installation if that
-#       file does not already exist.  make any edits in that copy, not in
-#       this 'zero.config.default' file to avoid conflicts with git pull
+# note: this file will be copied to 'pi-player.config' upon installation if
+#       the file does not already exist.  make any edits in that copy, not in
+#       this 'pi-player.default' file, to avoid conflicts with git pull
 #
 # some possible values for RelayGpio:
 #
@@ -21,7 +21,7 @@
 #
 # for additional details, see:
 #
-#    https://www.theengineeringprojects.com/wp-content/uploads/2021/03/raspberry-pi-zero-5.png
+#   https://www.raspberrypi.org/documentation/usage/gpio/images/GPIO-Pinout-Diagram-2.png
 #
 # some possible values for AudioFile:
 #

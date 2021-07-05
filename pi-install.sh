@@ -224,18 +224,17 @@ if [ "${TARGET}" == 'player' ]; then
     echo 'the pi-player.config file already exists'
   else
     echo 'creating the pi-player.config file...'
-    cp pi-player.config.default pi-player.config
     cat << EOF > pi-player.config
 #==============================================================================
 # PROGRAM = 'pi-player.config'
 # VERSION = '2.107.041'
 # CONTACT = 'bright.tiger@gmail.com'
 #
-# note: this file was copied from 'pi-player.config.default' on installation
-#   if it did not already exist.  make any edits in this copy, not to the
-#   original 'pi-player.config.default', file to avoid conflicts with git pull
+# note: this file was copied from 'pi-player.default' on installation if
+#       it did not already exist.  make any edits in this copy, not to the
+#       original 'pi-player.default', file to avoid conflicts with git pull
 EOF
-    tail -n +9 pi-player.config.default >> pi-player.config
+    tail -n +9 pi-player.default >> pi-player.config
     echo '  created the pi-player.config file'
     DELTA=1
   fi
