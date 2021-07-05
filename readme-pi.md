@@ -1,4 +1,4 @@
-# relay/pi-readme.md
+# relay/readme-pi.md
 
 ```
 04-Jul-2021
@@ -12,7 +12,8 @@ One or more _player_ (`raspberry pi` or `pi zero`) systems can accept command se
 See also:
 
 	README.md
-	nodemcu-readme.md
+	readme-nodemcu.md
+	readme-relay.md
 _Note_: Henceforth `pi` will refer to either a `Raspberry Pi` or a `Pi Zero`.
 
 ### Set up a `Raspberry Pi` or `Pi Zero`

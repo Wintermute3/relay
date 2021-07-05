@@ -11,7 +11,7 @@ PROGRAM = 'relay.py'
 VERSION = '2.107.041'
 CONTACT = 'bright.tiger@mail.com' # michael nagy
 
-import os, sys, subprocess, json
+import os, sys, subprocess, json, shutil
 
 DebugFlag = False # set with -d on command-line
 
@@ -25,8 +25,11 @@ def Splash():
   print()
 
 #------------------------------------------------------------------------------
-# the mac/name mapping json configuration file
+# the mac/name mapping json configuration file (default and runtime), and the
+# arp-scan cache file
 #------------------------------------------------------------------------------
+
+DefaultFile = '%s.default' % (PROGRAM.split('.')[0])
 
 JsonFile = '%s.json' % (PROGRAM.split('.')[0])
 PeerFile = '%s.peer' % (PROGRAM.split('.')[0])
@@ -84,8 +87,12 @@ def ShowError(Message):
   os._exit(1)
 
 #------------------------------------------------------------------------------
-# load the json configuration file and do a quick validation
+# load the json configuration file and do a quick validation (defaulting it
+# if it doesn't already exist)
 #------------------------------------------------------------------------------
+
+if not os.path.exists(JsonFile):
+  shutil.copy(DefaultFile, JsonFile)
 
 try:
   Relays = json.load(open(JsonFile))

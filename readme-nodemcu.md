@@ -1,4 +1,4 @@
-# relay/nodemcu-readme.md
+# relay/readme-nodemcu.md
 
 ```
 04-Jul-2021
@@ -12,7 +12,8 @@ One or more `nodemcu-player` systems can accept command sequences from an orches
 See also:
 
 	README.md
-	pi-readme.md
+	readme-pi.md
+	readme-relay.md
 ### Set up a `NodeMCU` player
 
 These instructions are generic, as it is possible to set up the `NodeMCU` from any system that can run the `Arduino IDE` and clone a `git` repo.
@@ -35,7 +36,4 @@ On your workstation:
 - note its `IP` and `MAC` addresses as reported on the terminal
 
 You can now use those addresses to add an entry in the `relay.json` file on your orchestrator, and then test your new player using that name.
-#
-
-
 #

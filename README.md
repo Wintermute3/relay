@@ -13,6 +13,9 @@ This repo contains several components which are designed to play nicely together
 
 The program `relay.py` runs on the _orchestrator_ system (expected to be a `raspberry pi`) and sends _player_ command sequences over WiFi to instances of `raspberry pi`, `pi zero` and `nodemcu` _players_ to control relay-closures and audio playback.
 
+See also:
+
+	readme-relay.md
 It finds WiFi client addresses using automatic arp resolution (discovery) of `mac` addresses.
 
 It is configured via the `relay.json` file which maps `mac` addresses to simple target names, and implements `arp` logic to locate targets specified by name using their `mac` addresses as long as they are on the same local network segment.
@@ -25,7 +28,7 @@ These programs are designed to run on `raspberry pi` or `pi zero` systems, and s
 
 See also:
 
-	pi-readme.md
+	readme-pi.md
 They are configured using the `pi-player.config` yaml file.
 
 The `pi-server.py` program runs as a systemd service, and accepts command lines compatible with the `nodemcu-player.ino` program, but in addition supports two additional control characters: an ampersand `@` and an percent sign `%`.
@@ -43,7 +46,7 @@ This program is an `arduino` sketch designed to run on `NodeMCU` modules.
 
 See also:
 
-	nodemcu-readme.md
+	readme-nodemcu.md
 Except for lack of audio playback support, it is compatible with the other `player` systems.
 
 When configured on the same WiFi network as the host running the `relay.py` program, it can be controlled via simple command-lines.
