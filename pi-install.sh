@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PROGRAM='pi-install.sh'
-VERSION='2.107.041'
+VERSION='2.107.071'
 CONTACT='bright.tiger@mail.com' # michael nagy
 
 #============================================================================
@@ -31,12 +31,14 @@ if [ -z "${TARGET}" ]; then
   exit 1
 else
   if cat /proc/cpuinfo | grep 'Pi Zero' > /dev/null; then
+    PITYPE='pizero'
     if [ "${TARGET}" != 'player' ]; then
       echo "*** expected 'player' option!"
       echo # pi zero can only be a player
       exit 1
     fi
   else
+    PITYPE='raspberrypi'
     if [ "${TARGET}" != 'player' -a "${TARGET}" != 'orchestrator' ]; then
       echo "*** expected 'player' or 'orchestrator' option!"
       echo # raspberry pi can be player or orchestrator
@@ -225,7 +227,9 @@ if [ "${TARGET}" == 'player' ]; then
   # assure required systemd services are installed, enabled and running
   #============================================================================
 
-  AssureSystemd pulseaudio
+  if [ "${PITYPE}" == 'raspberrypi' ]; then
+    AssureSystemd pulseaudio
+  fi
   AssureSystemd pi-player
 
   #============================================================================
