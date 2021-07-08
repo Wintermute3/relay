@@ -227,9 +227,7 @@ if [ "${TARGET}" == 'player' ]; then
   # assure required systemd services are installed, enabled and running
   #============================================================================
 
-  if [ "${PITYPE}" == 'raspberrypi' ]; then
-    AssureSystemd pulseaudio
-  fi
+  AssureSystemd pulseaudio
   AssureSystemd pi-player
 
   #============================================================================
@@ -243,7 +241,7 @@ if [ "${TARGET}" == 'player' ]; then
     cat << EOF > pi-player.config
 #==============================================================================
 # PROGRAM = 'pi-player.config'
-# VERSION = '2.107.041'
+# VERSION = '2.107.071'
 # CONTACT = 'bright.tiger@gmail.com'
 #
 # note: this file was copied from 'pi-player.default' on installation if
