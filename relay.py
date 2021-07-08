@@ -210,6 +210,8 @@ try:
   # if we loaded a peers file, use those mappings to find the ip
   # addresses of configured relays by matching mac addresses
 
+  if DebugFlag:
+    print('$peers')
   if Peers:
     if DebugFlag:
       print('  cache load:')
@@ -224,12 +226,14 @@ try:
           Relay['ip'] = Peer['ip']
           if DebugFlag:
             print('  relay name: %s, mac: %s, ip: %s, cmd: %s' % (
-              Relay['name'], MacAddress, IpAddress, Relay['command']))
+              Relay['name'], Relay['mac'], Relay['ip'], Relay['command']))
           Hits += 1
 
   # if we didn't find a peers file, or if the -f command-line option was
   # specified, do an arp-scan and merge the result into the peers file
 
+  if DebugFlag:
+    print('$arp-scan')
   if ForceScan or not Peers:
     if DebugFlag:
       print('  arp-scan:')
@@ -260,9 +264,9 @@ try:
             for Relay in Relays['relay']:
               if Relay['mac'] == MacAddress:
                 Relay['hit'] = True
-                Relay['ip'] = IpAddress
             for Relay in RelayCommands:
               if Relay['mac'] == MacAddress:
+                Relay['ip'] = IpAddress
                 if DebugFlag:
                   print('  relay name: %s, mac: %s, ip: %s, cmd: %s' % (
                     Relay['name'], MacAddress, IpAddress, Relay['command']))
@@ -279,15 +283,20 @@ try:
   # via an arp-scan run or from the cached peers file, issue its
   # commands using curl
 
+  if DebugFlag:
+    print('$hits')
   if Hits:
     if len(RelayCommands):
       for Command in RelayCommands:
         URL = 'http://%s/%s' % (Command['ip'], Command['command'])
         if DebugFlag:
           print('curl -s %s' % (URL))
-        for Line in subprocess.check_output(['curl','-s',URL]).decode('ascii').split('\n'):
-          if DebugFlag:
-            print('>> [%s]' % (Line.strip()))
+        try:
+          for Line in subprocess.check_output(['curl','-s',URL]).decode('ascii').split('\n'):
+            if DebugFlag:
+              print('>> [%s]' % (Line.strip()))
+        except:
+          ShowError("curl failed to %s" % (Command['ip']))
     else:
       ShowError("no relays from configuration file '%s' found" % (JsonFile))
 
