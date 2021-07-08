@@ -9,6 +9,7 @@
     { "mac": "9C:9C:1F:46:66:BA", "name": "H1" },
     { "mac": "9C:9C:1F:46:73:F7", "name": "P2" },
     { "mac": "B8:27:EB:25:60:19", "name": "Z2" },
+    { "mac": "B8:27:EB:EE:28:1F", "name": "Z1" },
     { "mac": "B8:27:EB:7D:B7:6D", "name": "Z1" },
     { "mac": "E8:DB:84:96:E4:7E", "name": "P3" },
     { "mac": "E8:DB:84:97:96:ED", "name": "P4" },
