@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 
 #==============================================================================
-# this program looks up wifi relays on the same subnet as the host where it
-# is running by mac address and sends on/off commands to them using curl.  it
-# is configured (mac/name mappings) using the relay.json file, which should
-# be present next to this file.
+# this program looks up player clients on the same subnet as the host where it
+# is running by mac address and sends commands to them using curl.  it is
+# configured (mac/name mappings) using the relay.json file, which should be
+# present next to this file.
 #==============================================================================
 
 PROGRAM = 'relay.py'
-VERSION = '2.105.071'
+VERSION = '2.107.051'
 CONTACT = 'bright.tiger@mail.com' # michael nagy
 
-import os, sys, subprocess, json
+import os, sys, subprocess, json, shutil
 
+NameMap   = False # set with -n on command-line
 DebugFlag = False # set with -d on command-line
+ForceScan = False # set with -f on command-line
 
 #------------------------------------------------------------------------------
 # announce ourselves
@@ -25,8 +27,11 @@ def Splash():
   print()
 
 #------------------------------------------------------------------------------
-# the mac/name mapping json configuration file
+# the mac/name mapping json configuration file (default and runtime), and the
+# arp-scan cache file
 #------------------------------------------------------------------------------
+
+DefaultFile = '%s.default' % (PROGRAM.split('.')[0])
 
 JsonFile = '%s.json' % (PROGRAM.split('.')[0])
 PeerFile = '%s.peer' % (PROGRAM.split('.')[0])
@@ -37,28 +42,29 @@ PeerFile = '%s.peer' % (PROGRAM.split('.')[0])
 
 def ShowHelp():
   HelpText = '''\
-    this program controls wifi relays
+    this program controls wifi relays and audio playback
 
 usage:
 
-    %s [-h] [-d] command {command {command...}}
+    %s [-h] [-n] [-d] [-f] command {command {command...}}
 
 where:
 
     -h . . . . . . this help text
+    -n . . . . . . show name to mac mapping table status
     -d . . . . . . enable debug output
-    -f . . . . . . force arp-scan cache refresh
+    -f . . . . . . force arp-scan cache update
 
     command  . . . command, as listed below (repeat as desired)
 
 commands may be:
 
-    {name}@ . . . . . . play audio track (pi zero only)
-    {name}% . . . . . . abort audio playback (pi zero only)
+    {name}@ . . . . . . play audio track (not on nodemcu)
+    {name}%% . . . . . . abort audio playback (not on nodemcu)
     {name}+ . . . . . . turn relay {name} on
     {name}- . . . . . . turn relay {name} off
 
-you may also follow {name} with a sequence of @/%/+/- and delay times in
+you may also follow {name} with a sequence of @/%%/+/- and delay times in
 seconds, so for instance the following will turn relay 'a1' off (which
 may be its initial state anyway), delay two seconds, turn it on, play
 an audio track, delay another 10 seconds, and turn it off again:
@@ -74,18 +80,28 @@ cached in the %s file.
   os._exit(1)
 
 #------------------------------------------------------------------------------
-# error exit
+# warning / error exit
 #------------------------------------------------------------------------------
 
-def ShowError(Message):
+def ShowMessage(Message):
   print('*** %s!' % (Message))
+
+def ShowInfo(Message):
+  ShowMessage('info: %s' % (Message))
+
+def ShowError(Message):
+  ShowMessage('error: %s' % (Message))
   print('*** try -h for help!')
   print()
   os._exit(1)
 
 #------------------------------------------------------------------------------
-# load the json configuration file and do a quick validation
+# load the json configuration file and do a quick validation (defaulting it
+# if it doesn't already exist)
 #------------------------------------------------------------------------------
+
+if not os.path.exists(JsonFile):
+  shutil.copy(DefaultFile, JsonFile)
 
 try:
   Relays = json.load(open(JsonFile))
@@ -98,7 +114,7 @@ try:
       Relay['name'] = Name
       Relay['hit' ] = False
       if Mac in Macs:
-        ShowError("configuration file '%s' defines mac '%s' twice" % (JsonFile, Mac))
+        ShowInfo("configuration file '%s' defines mac '%s' multiple times" % (JsonFile, Mac))
       Macs.append(Mac)
   except:
     ShowError("configuration file '%s' is structured improperly" % (JsonFile))
@@ -162,7 +178,9 @@ for arg in sys.argv[1:]:
   elif arg == '-d':
     DebugFlag = True
   elif arg == '-f':
-    Peers = None
+    ForceScan = True
+  elif arg == '-n':
+    NameMap = True
   else:
     ArgCommand = arg.lower()
     Hit = False
@@ -209,13 +227,16 @@ try:
               Relay['name'], MacAddress, IpAddress, Relay['command']))
           Hits += 1
 
-  # if we didn't find a peers file, do an arp-scan and create one for
-  # future reference
+  # if we didn't find a peers file, or if the -f command-line option was
+  # specified, do an arp-scan and merge the result into the peers file
 
-  if not Peers:
+  if ForceScan or not Peers:
     if DebugFlag:
       print('  arp-scan:')
-    Peers = {'peers': []}
+    if not Peers:
+      Peers = {'peers': []}
+    if DebugFlag:
+      print('  starting with %d peers' % (len(Peers['peers'])))
     for Line in subprocess.check_output(['sudo', 'arp-scan', '-l', '-q']).decode('ascii').split('\n'):
       if DebugFlag:
         print('    %s' % (Line))
@@ -225,7 +246,17 @@ try:
           if Line[0] in '123456789' and ':' in Line:
             IpAddress, MacAddress = Line.split('\t')
             MacAddress = MacAddress.lower()
-            Peers['peers'].append({'ip': IpAddress, 'mac': MacAddress})
+            Hit = False
+            for Peer in Peers['peers']:
+              if Peer['mac'] == MacAddress:
+                Hit = True
+                if Peer['ip'] != IpAddress:
+                  Peer['ip'] = IpAddress
+                  if DebugFlag:
+                    print('  updated mac %s to ip %s' % (MacAddress, IpAddress))
+            if not Hit:
+              Peers['peers'].append({'ip': IpAddress, 'mac': MacAddress})
+              print('  appended mac %s as ip %s' % (MacAddress, IpAddress))
             for Relay in Relays['relay']:
               if Relay['mac'] == MacAddress:
                 Relay['hit'] = True
@@ -241,6 +272,7 @@ try:
     with open(PeerFile, 'w') as f:
       f.write(json.dumps(Peers, indent=2))
       if DebugFlag:
+        print('  ending with %d peers' % (len(Peers['peers'])))
         print("  wrote '%s'" % (PeerFile))
 
   # if we managed to map at least one relay to an ip address, either
@@ -270,6 +302,40 @@ try:
 
 except:
   ShowError("install the 'arp-scan' utility and try again")
+
+if NameMap:
+  List = []
+  NameWidth = 4
+  for Relay in Relays['relay']:
+    Name = Relay['name']
+    NameWidth = max(NameWidth, len(Name))
+  print()
+  print('  %*s  mac               ip'              % (NameWidth, 'name'))
+  print( '  %s  ----------------- ---------------' % ('-' * NameWidth  ))
+  for Relay in Relays['relay']:
+    Name = Relay['name']
+    Mac  = Relay['mac']
+    if 'ip' in Relay:
+      Ip = Relay['ip']
+    else:
+      Ip = ''
+    List.append('%*s  %17s  %s' % (NameWidth, Name, Mac, Ip))
+  for Item in sorted(List):
+    print('  %s' % (Item))
+  List = []
+  for Peer in Peers['peers']:
+    Mac = Peer['mac']
+    Ip  = Peer['ip' ]
+    Hit = False
+    for Relay in Relays['relay']:
+      if Mac == Relay['mac']:
+        Hit = True
+    if not Hit:
+      List.append('%*s  %17s  %s' % (NameWidth, '', Mac, Ip))
+  print( '  %s  ----------------- ---------------' % ('-' * NameWidth  ))
+  for Item in sorted(List):
+    print('  %s' % (Item))
+  print()
 
 #==============================================================================
 # end

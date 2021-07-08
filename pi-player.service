@@ -1,11 +1,11 @@
 [Unit]
-Description=zero-server.py - gpio/audio remote node
+Description=server.py - gpio/audio player
 
 [Service]
 ExecStartPre=/bin/sleep 10
 Type=simple
 WorkingDirectory=/home/pi/relay
-ExecStart=/home/pi/relay/zero-server.py
+ExecStart=/home/pi/relay/server.py
 StandardOutput=syslog
 StandardError=syslog
 User=root

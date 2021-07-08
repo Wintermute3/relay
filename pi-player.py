@@ -15,8 +15,8 @@
 # progress.
 #==============================================================================
 
-PROGRAM = 'zero-player.py'
-VERSION = '2.107.021'
+PROGRAM = 'player.py'
+VERSION = '2.107.041'
 CONTACT = 'bright.tiger@gmail.com'
 
 # plug in sabrent usb audio adapter
@@ -31,8 +31,8 @@ CONTACT = 'bright.tiger@gmail.com'
 import os, sys, re, time
 from syslog import syslog
 
-ConfigFile = '/home/pi/relay/zero.config'
-StatusFile = '/home/pi/relay/zero.status'
+ConfigFile = '/home/pi/relay/player.config'
+StatusFile = '/home/pi/relay/player.status'
 
 #==============================================================================
 # log a message to the console and /var/log/syslog
