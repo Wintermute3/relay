@@ -16,7 +16,7 @@
 #==============================================================================
 
 PROGRAM = 'player.py'
-VERSION = '2.107.041'
+VERSION = '2.107.071'
 CONTACT = 'bright.tiger@gmail.com'
 
 # plug in sabrent usb audio adapter
@@ -31,8 +31,8 @@ CONTACT = 'bright.tiger@gmail.com'
 import os, sys, re, time
 from syslog import syslog
 
-ConfigFile = '/home/pi/relay/player.config'
-StatusFile = '/home/pi/relay/player.status'
+ConfigFile = '/home/pi/relay/pi-player.config'
+StatusFile = '/home/pi/relay/pi-player.status'
 
 #==============================================================================
 # log a message to the console and /var/log/syslog
