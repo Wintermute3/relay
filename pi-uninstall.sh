@@ -59,6 +59,11 @@ fi
 # assure systemd services are stopped and disabled
 #============================================================================
 
+# old stuff
+RemoveSystemd zero
+RemoveSystemd pulse
+
+# new stuff
 RemoveSystemd pulseaudio
 RemoveSystemd pi-player
 

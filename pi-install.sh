@@ -54,6 +54,24 @@ fi
 DELTA=0
 
 #============================================================================
+# remove the specified systemd service
+#============================================================================
+
+function RemoveSystemd {
+  SERVICE=${1}
+  if [ -f /etc/systemd/system/${SERVICE}.service ]; then
+    echo "stopping and disabling the systemd ${SERVICE} service..."
+    sudo systemctl stop ${SERVICE}
+    sudo systemctl disable ${SERVICE}
+    echo "  stopped and disabled the systemd ${SERVICE} service"
+    sudo rm /etc/systemd/system/${SERVICE}.service
+    DELTA=1
+  else
+    echo "the systemd service ${SERVICE} is not installed"
+  fi
+}
+
+#============================================================================
 # assure the specified systemd service is current, running and enabled
 #============================================================================
 
@@ -227,6 +245,11 @@ if [ "${TARGET}" == 'player' ]; then
   # assure required systemd services are installed, enabled and running
   #============================================================================
 
+  # old stuff
+  RemoveSystemd zero
+  RemoveSystemd pulse
+
+  # new stuff
   AssureSystemd pulseaudio
   AssureSystemd pi-player
 
