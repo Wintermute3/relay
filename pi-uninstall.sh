@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PROGRAM='pi-uninstall.sh'
-VERSION='2.107.051'
+VERSION='2.107.071'
 CONTACT='bright.tiger@mail.com' # michael nagy
 
 #============================================================================
@@ -30,6 +30,7 @@ function RemoveSystemd {
     sudo systemctl stop ${SERVICE}
     sudo systemctl disable ${SERVICE}
     echo "  stopped and disabled the systemd ${SERVICE} service"
+    sudo rm /etc/systemd/system/${SERVICE}.service
     DELTA=1
   else
     echo "the systemd service ${SERVICE} is not installed"
