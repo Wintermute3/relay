@@ -8,7 +8,7 @@
 #==============================================================================
 
 PROGRAM = 'relay.py'
-VERSION = '2.107.051'
+VERSION = '2.107.071'
 CONTACT = 'bright.tiger@mail.com' # michael nagy
 
 import os, sys, subprocess, json, shutil
@@ -260,9 +260,9 @@ try:
             for Relay in Relays['relay']:
               if Relay['mac'] == MacAddress:
                 Relay['hit'] = True
+                Relay['ip'] = IpAddress
             for Relay in RelayCommands:
               if Relay['mac'] == MacAddress:
-                Relay['ip'] = IpAddress
                 if DebugFlag:
                   print('  relay name: %s, mac: %s, ip: %s, cmd: %s' % (
                     Relay['name'], MacAddress, IpAddress, Relay['command']))
